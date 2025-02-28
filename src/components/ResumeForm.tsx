@@ -5,6 +5,7 @@ import "react-phone-number-input/style.css";
 // Define the ResumeData type
 export interface ResumeData {
   name: string;
+  jobTitle: string;
   email: string;
   phone: string;
   experience: string;
@@ -25,6 +26,7 @@ interface ResumeFormProps {
 const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
   const [formData, setFormData] = useState<ResumeData>({
     name: "",
+    jobTitle: "",
     email: "",
     phone: "",
     experience: "",
@@ -84,8 +86,20 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             onChange={handleChange}
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
           />
+        </div>{" "}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Job Title
+          </label>
+          <input
+            type="text"
+            name="jobTitle"
+            placeholder="developer"
+            value={formData.jobTitle}
+            onChange={handleChange}
+            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
+          />
         </div>
-
         {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -100,7 +114,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
           />
         </div>
-
         {/* Phone */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -113,7 +126,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
           />
         </div>
-
         {/* Experience */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -128,7 +140,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Skills */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -143,7 +154,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Education */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -158,7 +168,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Summary */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -173,7 +182,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Certifications */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -188,7 +196,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Projects */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -203,7 +210,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Languages */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -218,7 +224,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Achievements */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -233,7 +238,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
           />
         </div>
-
         {/* Portfolio/Links */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

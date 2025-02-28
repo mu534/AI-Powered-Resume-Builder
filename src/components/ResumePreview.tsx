@@ -2,6 +2,7 @@ import React from "react";
 
 type ResumeProps = {
   name: string;
+  jobTitle: string;
   email: string;
   phone: string;
   experience: string;
@@ -101,7 +102,7 @@ const ResumePreview: React.FC<{ data: ResumeProps }> = ({ data }) => {
           borderBottom: "1px solid #d3d3d3",
         }}
       >
-        <h2
+        <h3
           style={{
             fontSize: "clamp(1.5rem, 4vw, 2rem)", // Responsive font size
             fontWeight: 700,
@@ -110,7 +111,17 @@ const ResumePreview: React.FC<{ data: ResumeProps }> = ({ data }) => {
           }}
         >
           {data.name}
-        </h2>
+        </h3>
+        <h4
+          style={{
+            fontSize: "clamp(1.5rem, 4vw, 2rem)", // Responsive font size
+            fontWeight: 700,
+            color: "black",
+            marginBottom: "0.5rem",
+          }}
+        >
+          {data.jobTitle}
+        </h4>
         <p
           style={{
             fontSize: "clamp(0.875rem, 2vw, 1rem)", // Responsive font size
