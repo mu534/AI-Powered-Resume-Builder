@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 const Home: React.FC = () => {
-  // Animation variants for fade-in and slide-up
   const fadeIn = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.8 } },
@@ -17,7 +17,6 @@ const Home: React.FC = () => {
     },
   };
 
-  // Magic animation for "How It Works" cards
   const magicCard = {
     hidden: { opacity: 0, scale: 0.8, rotate: -10 },
     visible: (i: number) => ({
@@ -25,7 +24,7 @@ const Home: React.FC = () => {
       scale: 1,
       rotate: 0,
       transition: {
-        delay: 1.4 + i * 0.3, // Staggered entrance
+        delay: 1.4 + i * 0.3,
         duration: 0.7,
         ease: "easeOut",
         type: "spring",
@@ -66,9 +65,12 @@ const Home: React.FC = () => {
             >
               How It Works
             </a>
-            <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
-              Get Started
-            </button>
+            {/* Updated Button with Link */}
+            <Link to="/signin">
+              <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -76,7 +78,6 @@ const Home: React.FC = () => {
       {/* Main Content */}
       <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-screen">
         <div className="max-w-3xl w-full space-y-8 text-center">
-          {/* Header */}
           <motion.h1
             initial="hidden"
             animate="visible"
@@ -94,8 +95,6 @@ const Home: React.FC = () => {
           >
             Craft Your Perfect Resume with AI Precision
           </motion.p>
-
-          {/* Intro Text */}
           <motion.p
             initial="hidden"
             animate="visible"
@@ -109,7 +108,6 @@ const Home: React.FC = () => {
             employers—all in minutes.
           </motion.p>
 
-          {/* Why Choose Us */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -147,7 +145,6 @@ const Home: React.FC = () => {
             </ul>
           </motion.div>
 
-          {/* How It Works with Magic Animation */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -185,7 +182,6 @@ const Home: React.FC = () => {
                   whileHover="hover"
                   className="bg-white p-4 rounded-lg shadow-md relative overflow-hidden"
                 >
-                  {/* Sparkle Effect */}
                   <motion.div
                     className="absolute top-0 left-0 w-full h-full pointer-events-none"
                     initial={{ opacity: 0 }}
@@ -197,7 +193,7 @@ const Home: React.FC = () => {
                     transition={{
                       duration: 2,
                       repeat: Infinity,
-                      repeatDelay: index === 1 ? 1 : 2, // Stagger sparkles
+                      repeatDelay: index === 1 ? 1 : 2,
                       ease: "easeInOut",
                     }}
                   >
@@ -216,7 +212,6 @@ const Home: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Call to Action */}
           <motion.div
             initial="hidden"
             animate="visible"
