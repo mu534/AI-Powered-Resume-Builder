@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, useEffect } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -9,12 +9,12 @@ export interface ResumeData {
   email: string;
   phone: string;
   experience: string;
-  skills: string;
+  skills: string[];
   education: string;
   summary: string;
-  certifications: string;
-  projects: string;
-  languages: string;
+  certifications: string[];
+  projects: string[];
+  languages: string[];
   achievements: string;
   links: string;
 }
@@ -30,15 +30,29 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
     email: "",
     phone: "",
     experience: "",
-    skills: "",
+    skills: [],
     education: "",
     summary: "",
-    certifications: "",
-    projects: "",
-    languages: "",
+    certifications: [],
+    projects: [],
+    languages: [],
     achievements: "",
     links: "",
   });
+
+  // Load saved data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("resumeFormData");
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, []);
+
+  // Save data to localStorage whenever formData changes
+  useEffect(() => {
+    localStorage.setItem("resumeFormData", JSON.stringify(formData));
+    setResumeData(formData);
+  }, [formData, setResumeData]);
 
   // Handle form field changes
   const handleChange = (
@@ -46,10 +60,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setResumeData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -61,18 +71,42 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
       ...prev,
       phone: value || "",
     }));
-    setResumeData((prev) => ({
+  };
+
+  // Handle dynamic array fields (skills, certifications, projects, languages)
+  const handleArrayFieldChange = (
+    field: keyof ResumeData,
+    index: number,
+    value: string
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      phone: value || "",
+      [field]: (prev[field] as string[]).map((item, i) =>
+        i === index ? value : item
+      ),
+    }));
+  };
+
+  const addArrayField = (field: keyof ResumeData) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: [...(prev[field] as string[]), ""],
+    }));
+  };
+
+  const removeArrayField = (field: keyof ResumeData, index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: (prev[field] as string[]).filter((_, i) => i !== index),
     }));
   };
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 bg-white shadow-lg rounded-lg w-full max-w-full">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center text-blue-600">
-        Resume Details
+    <div className="p-6 bg-white shadow-lg rounded-lg w-full max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">
+        Build Your Resume
       </h2>
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-6">
         {/* Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -81,12 +115,15 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
           <input
             type="text"
             name="name"
-            placeholder="Jmudasir"
+            placeholder="John Doe"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            required
           />
-        </div>{" "}
+        </div>
+
+        {/* Job Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Job Title
@@ -94,12 +131,14 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
           <input
             type="text"
             name="jobTitle"
-            placeholder="developer"
+            placeholder="Software Developer"
             value={formData.jobTitle}
             onChange={handleChange}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            required
           />
         </div>
+
         {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -108,24 +147,27 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
           <input
             type="email"
             name="email"
+            placeholder="john.doe@example.com"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Email"
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            required
           />
         </div>
+
         {/* Phone */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Phone
           </label>
           <PhoneInput
-            placeholder="Phone"
+            placeholder="Enter phone number"
             value={formData.phone}
             onChange={handlePhoneChange}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           />
         </div>
+
         {/* Experience */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -135,25 +177,46 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             name="experience"
             value={formData.experience}
             onChange={handleChange}
-            placeholder="Experience"
-            rows={3}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
+            placeholder="Describe your work experience"
+            rows={4}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y"
           />
         </div>
+
         {/* Skills */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Skills
           </label>
-          <textarea
-            name="skills"
-            value={formData.skills}
-            onChange={handleChange}
-            placeholder="Skills (comma-separated)"
-            rows={2}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
-          />
+          {formData.skills.map((skill, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                value={skill}
+                onChange={(e) =>
+                  handleArrayFieldChange("skills", index, e.target.value)
+                }
+                placeholder="Skill"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              />
+              <button
+                type="button"
+                onClick={() => removeArrayField("skills", index)}
+                className="p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayField("skills")}
+            className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add Skill
+          </button>
         </div>
+
         {/* Education */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -163,11 +226,12 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             name="education"
             value={formData.education}
             onChange={handleChange}
-            placeholder="Education"
-            rows={2}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
+            placeholder="Describe your education"
+            rows={3}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y"
           />
         </div>
+
         {/* Summary */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -177,53 +241,118 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             name="summary"
             value={formData.summary}
             onChange={handleChange}
-            placeholder="Profile Summary"
-            rows={3}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
+            placeholder="Write a brief summary about yourself"
+            rows={4}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y"
           />
         </div>
+
         {/* Certifications */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Certifications
           </label>
-          <textarea
-            name="certifications"
-            value={formData.certifications}
-            onChange={handleChange}
-            placeholder="Certifications"
-            rows={2}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
-          />
+          {formData.certifications.map((certification, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                value={certification}
+                onChange={(e) =>
+                  handleArrayFieldChange(
+                    "certifications",
+                    index,
+                    e.target.value
+                  )
+                }
+                placeholder="Certification"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              />
+              <button
+                type="button"
+                onClick={() => removeArrayField("certifications", index)}
+                className="p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayField("certifications")}
+            className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add Certification
+          </button>
         </div>
+
         {/* Projects */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Projects
           </label>
-          <textarea
-            name="projects"
-            value={formData.projects}
-            onChange={handleChange}
-            placeholder="Projects"
-            rows={3}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
-          />
+          {formData.projects.map((project, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                value={project}
+                onChange={(e) =>
+                  handleArrayFieldChange("projects", index, e.target.value)
+                }
+                placeholder="Project"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              />
+              <button
+                type="button"
+                onClick={() => removeArrayField("projects", index)}
+                className="p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayField("projects")}
+            className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add Project
+          </button>
         </div>
+
         {/* Languages */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Languages
           </label>
-          <textarea
-            name="languages"
-            value={formData.languages}
-            onChange={handleChange}
-            placeholder="Languages (comma-separated)"
-            rows={2}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
-          />
+          {formData.languages.map((language, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                value={language}
+                onChange={(e) =>
+                  handleArrayFieldChange("languages", index, e.target.value)
+                }
+                placeholder="Language"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              />
+              <button
+                type="button"
+                onClick={() => removeArrayField("languages", index)}
+                className="p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayField("languages")}
+            className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add Language
+          </button>
         </div>
+
         {/* Achievements */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -233,12 +362,13 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             name="achievements"
             value={formData.achievements}
             onChange={handleChange}
-            placeholder="Achievements"
-            rows={2}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
+            placeholder="List your achievements"
+            rows={3}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y"
           />
         </div>
-        {/* Portfolio/Links */}
+
+        {/* Links */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Portfolio/Links
@@ -247,9 +377,9 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ setResumeData }) => {
             name="links"
             value={formData.links}
             onChange={handleChange}
-            placeholder="Portfolio/Links"
+            placeholder="Add links to your portfolio or social profiles"
             rows={2}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base resize-y"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y"
           />
         </div>
       </div>
