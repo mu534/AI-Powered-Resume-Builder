@@ -1,165 +1,207 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
-import { FaPlus } from "react-icons/fa";
-import { Resume } from "../types";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import ResumePDF from "./ResumePDF";
-
-const initialResume: Resume = {
-  id: "1",
-  name: "My Resume",
-  content: {
-    personal: {
-      name: "Jane Doe",
-      email: "jane@example.com",
-      phone: "123-456-7890",
-      summary: "",
-    },
-    experience: [],
-    skills: ["React", "TypeScript"],
-  },
-  templateId: "t1",
-};
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaHome } from "react-icons/fa"; // For theme icon
+import { PersonalDetails } from "../types"; // Import from types.ts
 
 const ResumeEditor: React.FC = () => {
-  const [resume, setResume] = useState<Resume>(() => {
-    const saved = localStorage.getItem("resume");
-    return saved ? JSON.parse(saved) : initialResume;
+  const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
+    firstName: "",
+    lastName: "",
+    jobTitle: "",
+    address: "",
+    phone: "",
+    email: "",
   });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const resumeTitle = query.get("title") || "New Resume";
 
-  useEffect(() => {
-    localStorage.setItem("resume", JSON.stringify(resume));
-  }, [resume]);
-
-  const updatePersonal = (
-    field: keyof Resume["content"]["personal"],
-    value: string
-  ) => {
-    setResume((prev) => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        personal: { ...prev.content.personal, [field]: value },
-      },
-    }));
+  const handleChange = (field: keyof PersonalDetails, value: string) => {
+    setPersonalDetails((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addExperience = () => {
-    const newExp = {
-      title: "New Role",
-      company: "Company",
-      dates: "2023-2025",
-      description: "Did stuff",
-    };
-    setResume((prev) => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        experience: [...prev.content.experience, newExp],
-      },
-    }));
+  const handleSave = () => {
+    localStorage.setItem("personalDetails", JSON.stringify(personalDetails));
+    navigate("/resume-home", { state: { resumeTitle, personalDetails } });
   };
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const items = Array.from(resume.content.experience);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    setResume((prev) => ({
-      ...prev,
-      content: { ...prev.content, experience: items },
-    }));
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.8 } },
+  };
+
+  const slideUp = {
+    hidden: { y: 50, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg">
-      <h3 className="text-xl font-semibold text-indigo-900 mb-4">
-        Craft Your Resume
-      </h3>
-      <div className="space-y-4">
-        <input
-          type="text"
-          value={resume.content.personal.name}
-          onChange={(e) => updatePersonal("name", e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Your Name"
-        />
-        <input
-          type="email"
-          value={resume.content.personal.email}
-          onChange={(e) => updatePersonal("email", e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Email Address"
-        />
-        <textarea
-          value={resume.content.personal.summary || ""}
-          onChange={(e) => updatePersonal("summary", e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Professional Summary"
-        />
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={fadeIn}
+      className="min-h-screen bg-white flex flex-col items-center justify-center"
+    >
+      {/* Navbar */}
+      <nav className="bg-white shadow-md fixed w-full z-10 top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeIn}
+            className="text-2xl font-bold text-blue-600"
+          >
+            ResumeAI
+          </motion.div>
+          <div className="space-x-4">
+            <Link
+              to="/"
+              className="text-gray-600 hover:text-blue-600 transition duration-300"
+            >
+              Home
+            </Link>
+            <Link
+              to="/settings"
+              className="text-gray-600 hover:text-blue-600 transition duration-300"
+            >
+              Settings
+            </Link>
+          </div>
+        </div>
+      </nav>
 
-        {/* Drag & Drop Experience */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="experience">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="space-y-2"
-              >
-                {resume.content.experience.map((exp, index) => (
-                  <Draggable key={index} draggableId={`${index}`} index={index}>
-                    {(provided) => (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="rounded-lg border"
-                      >
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="p-3 bg-gray-50 rounded-lg flex items-center"
-                        >
-                          <span className="font-medium text-gray-800">
-                            {exp.title} - {exp.company}
-                          </span>
-                        </div>
-                      </motion.div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+      {/* Main Content */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={fadeIn}
+        className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-center justify-center"
+      >
+        <div className="max-w-4xl w-full space-y-6">
+          <div className="flex justify-between items-center mb-4">
+            <button className="bg-purple-500 text-white p-2 rounded-full flex items-center gap-2 hover:bg-purple-600 transition-all">
+              <FaHome className="text-lg" /> Theme
+            </button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() =>
+                navigate("/resume-home", {
+                  state: { resumeTitle, personalDetails },
+                })
+              }
+              className="bg-purple-500 text-white px-4 py-2 rounded-full hover:bg-purple-600 transition-all"
+            >
+              Next →
+            </motion.button>
+          </div>
+
+          <motion.div
+            variants={slideUp}
+            className="bg-white p-6 rounded-xl shadow-lg border border-purple-200"
+          >
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Personal Detail
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Get started with the basic information
+            </p>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={personalDetails.firstName}
+                    onChange={(e) => handleChange("firstName", e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="First Name"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={personalDetails.lastName}
+                    onChange={(e) => handleChange("lastName", e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Last Name"
+                  />
+                </div>
               </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={addExperience}
-          className="flex items-center gap-2 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all"
-        >
-          <FaPlus /> Add Experience
-        </motion.button>
-
-        <PDFDownloadLink
-          document={<ResumePDF resume={resume} />}
-          fileName="resume.pdf"
-          className="inline-block mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-all"
-        >
-          {({ loading }) => (loading ? "Generating PDF..." : "Download PDF")}
-        </PDFDownloadLink>
-      </div>
-    </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  value={personalDetails.jobTitle}
+                  onChange={(e) => handleChange("jobTitle", e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Job Title"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  value={personalDetails.address}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Address"
+                />
+              </div>
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={personalDetails.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Phone"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={personalDetails.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Email"
+                  />
+                </div>
+              </div>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSave}
+              className="mt-6 bg-purple-500 text-white px-4 py-2 rounded-full hover:bg-purple-600 transition-all"
+            >
+              Save
+            </motion.button>
+          </motion.div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

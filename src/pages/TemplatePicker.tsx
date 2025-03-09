@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Template } from "../types";
-
+import { Template } from "../types/";
+import creative from "../assets/images/creative.png";
+import bold from "../assets/images/bold.png";
+import classic from "../assets/images/classic.png";
 const templates: Template[] = [
   {
     id: "t1",
     name: "Sleek Modern",
-    preview: "/modern.png",
+    preview: bold,
     styles: {
       bg: "bg-gray-100",
       text: "text-gray-900",
@@ -16,7 +18,7 @@ const templates: Template[] = [
   {
     id: "t2",
     name: "Bold Creative",
-    preview: "/creative.png",
+    preview: creative,
     styles: {
       bg: "bg-blue-100",
       text: "text-blue-900",
@@ -26,7 +28,7 @@ const templates: Template[] = [
   {
     id: "t3",
     name: "Classic Professional",
-    preview: "/classic.png",
+    preview: classic,
     styles: { bg: "bg-white", text: "text-black", accent: "border-gray-500" },
   },
 ];
@@ -46,7 +48,7 @@ const TemplatePicker: React.FC<TemplatePickerProps> = ({ onSelect }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className=" bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-extrabold text-indigo-900 mb-8 text-center">
         Choose Your Resume Style
       </h1>
@@ -66,7 +68,7 @@ const TemplatePicker: React.FC<TemplatePickerProps> = ({ onSelect }) => {
             <img
               src={template.preview}
               alt={template.name}
-              className="w-full h-48 object-cover rounded-lg mb-4"
+              className="w-full h-100 object-cover rounded-lg mb-4"
             />
             <h3 className="text-xl font-semibold text-center">
               {template.name}

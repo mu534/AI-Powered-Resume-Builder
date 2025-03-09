@@ -1,15 +1,22 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import Resume from "./components/Resume";
+
 import SignIn from "./HomePage/Signin";
 import SignUp from "./HomePage/SignUp ";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import TemplatePicker from "./pages/TemplatePicker";
 import Sidebar from "./components/Sidebar";
+import ResumeRoot from "./pages/ResumeRoot";
+import ResumeHome from "./pages/ResumeHome";
+import ResumeSummary from "./pages/ResumeSummary";
+import ResumeExperience from "./pages/ResumeExperience";
+import ResumeEducation from "./pages/ResumeEducation";
+import ResumeFinal from "./pages/ResumeFinal";
+import ResumeSkills from "./pages/ResumeSkills";
+import Profile from "./pages/Profile"; // Added Profile Import
 
-// Auth Layout for SignIn and SignUp
 const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
   children,
   title,
@@ -22,14 +29,14 @@ const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
         </h1>
         {children}
         <p className="mt-4 text-center text-sm text-gray-600">
-          Powered by <span className="font-semibold text-indigo-600">xAI</span>
+          Powered by{" "}
+          <span className="font-semibold text-indigo-600">Native-X</span>
         </p>
       </div>
     </div>
   );
 };
 
-// Career Layout with Sidebar and Auth Check
 const CareerLayout: React.FC<{
   children: React.ReactNode;
   isAuthenticated: boolean;
@@ -59,7 +66,6 @@ function App() {
   return (
     <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
       <Routes>
-        {/* Auth Routes */}
         <Route
           path="/signin"
           element={
@@ -77,7 +83,6 @@ function App() {
           }
         />
 
-        {/* Dashboard as Root */}
         <Route
           path="/"
           element={
@@ -93,10 +98,86 @@ function App() {
           }
         />
 
-        {/* Resume Route */}
-        <Route path="/resume" element={<Resume />} />
+        <Route path="/ResumeRoot" element={<ResumeRoot />} />
+        <Route
+          path="/ResumeHome"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <ResumeHome />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-summary"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <ResumeSummary />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-experience"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <ResumeExperience />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-education"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <ResumeEducation />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-skills"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <ResumeSkills />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-final"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <ResumeFinal />
+            </CareerLayout>
+          }
+        />
 
-        {/* Settings */}
+        <Route
+          path="/profile"
+          element={
+            <CareerLayout
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+            >
+              <Profile />
+            </CareerLayout>
+          }
+        />
+
         <Route
           path="/settings"
           element={
@@ -109,7 +190,6 @@ function App() {
           }
         />
 
-        {/* Template Picker Route */}
         <Route
           path="/templates"
           element={
