@@ -93,6 +93,15 @@ const CoverLetterGen: React.FC = () => {
 
   const fullLetter = `Dear ${form.recipient},\n${form.intro}\n\n${form.skills}\n\n${form.closing}\n\nSincerely,\n[Your Name]`;
 
+  // Function to download the cover letter
+  const downloadLetter = () => {
+    const blob = new Blob([fullLetter], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "cover-letter.txt";
+    link.click();
+  };
+
   return (
     <div className="p-4 md:px-40 md:py-6 rounded-xl">
       <h3 className="text-lg md:text-2xl font-bold text-indigo-900 mb-4">
@@ -105,7 +114,6 @@ const CoverLetterGen: React.FC = () => {
         </div>
       )}
 
-      {/* Tone Selector */}
       <select
         value={form.tone}
         onChange={(e) => handleChange("tone", e.target.value)}
@@ -117,7 +125,6 @@ const CoverLetterGen: React.FC = () => {
         <option value="Bold">Bold</option>
       </select>
 
-      {/* Buttons */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <button
           onClick={generateLetter}
@@ -135,7 +142,6 @@ const CoverLetterGen: React.FC = () => {
         </button>
       </div>
 
-      {/* Edit Form or Preview */}
       {isEditing ? (
         <div className="space-y-4">
           <div>
@@ -150,63 +156,6 @@ const CoverLetterGen: React.FC = () => {
               placeholder="e.g., Hiring Manager"
             />
           </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Job Title
-            </label>
-            <input
-              type="text"
-              value={form.jobTitle}
-              onChange={(e) => handleChange("jobTitle", e.target.value)}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              placeholder="e.g., Frontend Developer"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Company
-            </label>
-            <input
-              type="text"
-              value={form.company}
-              onChange={(e) => handleChange("company", e.target.value)}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              placeholder="e.g., TechCorp"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Introduction
-            </label>
-            <textarea
-              value={form.intro}
-              onChange={(e) => handleChange("intro", e.target.value)}
-              className="w-full p-3 border rounded-lg h-32 md:h-20 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              placeholder="e.g., I’m excited to apply for..."
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Skills
-            </label>
-            <textarea
-              value={form.skills}
-              onChange={(e) => handleChange("skills", e.target.value)}
-              className="w-full p-3 border rounded-lg h-32 md:h-20 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              placeholder="e.g., I bring expertise in..."
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Closing
-            </label>
-            <textarea
-              value={form.closing}
-              onChange={(e) => handleChange("closing", e.target.value)}
-              className="w-full p-3 border rounded-lg h-32 md:h-20 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              placeholder="e.g., I’d love the opportunity to..."
-            />
-          </div>
         </div>
       ) : (
         <textarea
@@ -214,6 +163,18 @@ const CoverLetterGen: React.FC = () => {
           readOnly
           className="w-full mt-4 p-3 border rounded-lg h-48 md:h-40 bg-gray-50 text-gray-700 focus:outline-none"
         />
+      )}
+
+      {/* Download Button */}
+      {!isEditing && !isLoading && (
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={downloadLetter}
+            className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-all"
+          >
+            Download Cover Letter
+          </button>
+        </div>
       )}
     </div>
   );
