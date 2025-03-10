@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
 import SignIn from "./HomePage/Signin";
 import SignUp from "./HomePage/SignUp ";
 import Dashboard from "./pages/Dashboard";
@@ -41,7 +40,14 @@ const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
 const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  console.log("CareerLayout rendering at:", new Date().toISOString());
   const { isAuthenticated, setIsAuthenticated } = useAppContext();
+  console.log(
+    "CareerLayout: Context accessed at:",
+    new Date().toISOString(),
+    "isAuthenticated:",
+    isAuthenticated
+  );
 
   if (!isAuthenticated) return <Navigate to="/signin" replace />;
 
