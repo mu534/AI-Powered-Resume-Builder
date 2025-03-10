@@ -16,6 +16,7 @@ import ResumeEducation from "./pages/ResumeEducation";
 import ResumeFinal from "./pages/ResumeFinal";
 import ResumeSkills from "./pages/ResumeSkills";
 import Profile from "./pages/Profile";
+import { AppProvider, useAppContext } from "./AppContext";
 
 const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
   children,
@@ -37,11 +38,11 @@ const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
   );
 };
 
-const CareerLayout: React.FC<{
-  children: React.ReactNode;
-  isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ children, isAuthenticated, setIsAuthenticated }) => {
+const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { isAuthenticated, setIsAuthenticated } = useAppContext();
+
   if (!isAuthenticated) return <Navigate to="/signin" replace />;
 
   const handleLogout = () => {
@@ -58,151 +59,116 @@ const CareerLayout: React.FC<{
 };
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("authToken")
-  );
+  const { setIsAuthenticated } = useAppContext();
   const [selectedTemplate, setSelectedTemplate] = useState<string>("t1");
 
   return (
-    <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
-      <Routes>
-        <Route
-          path="/signin"
-          element={
-            <AuthLayout title="Sign In">
-              <SignIn setIsAuthenticated={setIsAuthenticated} />
-            </AuthLayout>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <AuthLayout title="Sign Up">
-              <SignUp setIsAuthenticated={setIsAuthenticated} />
-            </AuthLayout>
-          }
-        />
-
-        <Route
-          path="/"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <Dashboard
-                selectedTemplate={selectedTemplate}
-                setSelectedTemplate={setSelectedTemplate}
-              />
-            </CareerLayout>
-          }
-        />
-
-        <Route path="/ResumeRoot" element={<ResumeRoot />} />
-        <Route
-          path="/ResumeHome"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <ResumeHome />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-summary"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <ResumeSummary />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-experience"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <ResumeExperience />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-education"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <ResumeEducation />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-skills"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <ResumeSkills />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-final"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <ResumeFinal />
-            </CareerLayout>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <Profile />
-            </CareerLayout>
-          }
-        />
-
-        <Route
-          path="/settings"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <Settings />
-            </CareerLayout>
-          }
-        />
-
-        <Route
-          path="/templates"
-          element={
-            <CareerLayout
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-            >
-              <TemplatePicker onSelect={setSelectedTemplate} />
-            </CareerLayout>
-          }
-        />
-      </Routes>
-    </GoogleOAuthProvider>
+    <AppProvider>
+      <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
+        <Routes>
+          <Route
+            path="/signin"
+            element={
+              <AuthLayout title="Sign In">
+                <SignIn setIsAuthenticated={setIsAuthenticated} />
+              </AuthLayout>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <AuthLayout title="Sign Up">
+                <SignUp setIsAuthenticated={setIsAuthenticated} />
+              </AuthLayout>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <CareerLayout>
+                <Dashboard
+                  selectedTemplate={selectedTemplate}
+                  setSelectedTemplate={setSelectedTemplate}
+                />
+              </CareerLayout>
+            }
+          />
+          <Route path="/ResumeRoot" element={<ResumeRoot />} />
+          <Route
+            path="/ResumeHome"
+            element={
+              <CareerLayout>
+                <ResumeHome />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-summary"
+            element={
+              <CareerLayout>
+                <ResumeSummary />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-experience"
+            element={
+              <CareerLayout>
+                <ResumeExperience />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-education"
+            element={
+              <CareerLayout>
+                <ResumeEducation />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-skills"
+            element={
+              <CareerLayout>
+                <ResumeSkills />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-final"
+            element={
+              <CareerLayout>
+                <ResumeFinal />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <CareerLayout>
+                <Profile />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <CareerLayout>
+                <Settings />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/templates"
+            element={
+              <CareerLayout>
+                <TemplatePicker onSelect={setSelectedTemplate} />
+              </CareerLayout>
+            }
+          />
+        </Routes>
+      </GoogleOAuthProvider>
+    </AppProvider>
   );
 }
 

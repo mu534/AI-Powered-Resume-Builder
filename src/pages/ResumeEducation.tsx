@@ -178,10 +178,9 @@ const ResumeEducation: React.FC = () => {
       transition={{ duration: 0.5 }}
     >
       <nav className="bg-white shadow-md w-full fixed top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <span className="text-2xl font-bold text-blue-600">ResumeAI</span>
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-end items-center">
           <Link
-            to="/Dashboard"
+            to="/"
             className="text-gray-600 hover:text-blue-600 transition-colors"
           >
             Dashboard

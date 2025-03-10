@@ -77,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
         <div className="flex items-center gap-3 mb-6 p-4 bg-indigo-700 rounded-lg hover:bg-indigo-600 transition-all duration-200">
           <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center overflow-hidden">
             {isLoading ? (
-              <div className=" animate-pulse bg-gray-500 w-full h-full"></div>
+              <div className="animate-pulse bg-gray-500 w-full h-full"></div>
             ) : profile.profileImage ? (
               <img
                 src={profile.profileImage}
