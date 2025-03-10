@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import SavedResumeCard from "./SavedResumeCard"; // Import the new component
+import SavedResumeCard from "./SavedResumeCard";
+import { useAppContext } from "../AppContext"; // Adjust path if needed
 
 interface Resume {
   title: string;
@@ -13,6 +14,10 @@ const ResumeRoot: React.FC = () => {
   const [newResumeTitle, setNewResumeTitle] = useState("");
   const [savedResumes, setSavedResumes] = useState<Resume[]>([]);
   const navigate = useNavigate();
+
+  // Debug: Check if context is available
+  const context = useAppContext();
+  console.log("ResumeRoot: Context available:", context);
 
   // Load saved resumes from localStorage on component mount
   useEffect(() => {

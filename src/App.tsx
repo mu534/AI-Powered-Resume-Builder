@@ -16,7 +16,7 @@ import ResumeEducation from "./pages/ResumeEducation";
 import ResumeFinal from "./pages/ResumeFinal";
 import ResumeSkills from "./pages/ResumeSkills";
 import Profile from "./pages/Profile";
-import { AppProvider, useAppContext } from "./AppContext";
+import { useAppContext } from "./AppContext";
 
 const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
   children,
@@ -63,112 +63,117 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("t1");
 
   return (
-    <AppProvider>
-      <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
-        <Routes>
-          <Route
-            path="/signin"
-            element={
-              <AuthLayout title="Sign In">
-                <SignIn setIsAuthenticated={setIsAuthenticated} />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <AuthLayout title="Sign Up">
-                <SignUp setIsAuthenticated={setIsAuthenticated} />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <CareerLayout>
-                <Dashboard
-                  selectedTemplate={selectedTemplate}
-                  setSelectedTemplate={setSelectedTemplate}
-                />
-              </CareerLayout>
-            }
-          />
-          <Route path="/ResumeRoot" element={<ResumeRoot />} />
-          <Route
-            path="/ResumeHome"
-            element={
-              <CareerLayout>
-                <ResumeHome />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/resume-summary"
-            element={
-              <CareerLayout>
-                <ResumeSummary />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/resume-experience"
-            element={
-              <CareerLayout>
-                <ResumeExperience />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/resume-education"
-            element={
-              <CareerLayout>
-                <ResumeEducation />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/resume-skills"
-            element={
-              <CareerLayout>
-                <ResumeSkills />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/resume-final"
-            element={
-              <CareerLayout>
-                <ResumeFinal />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <CareerLayout>
-                <Profile />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <CareerLayout>
-                <Settings />
-              </CareerLayout>
-            }
-          />
-          <Route
-            path="/templates"
-            element={
-              <CareerLayout>
-                <TemplatePicker onSelect={setSelectedTemplate} />
-              </CareerLayout>
-            }
-          />
-        </Routes>
-      </GoogleOAuthProvider>
-    </AppProvider>
+    <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
+      <Routes>
+        <Route
+          path="/signin"
+          element={
+            <AuthLayout title="Sign In">
+              <SignIn setIsAuthenticated={setIsAuthenticated} />
+            </AuthLayout>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <AuthLayout title="Sign Up">
+              <SignUp setIsAuthenticated={setIsAuthenticated} />
+            </AuthLayout>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <CareerLayout>
+              <Dashboard
+                selectedTemplate={selectedTemplate}
+                setSelectedTemplate={setSelectedTemplate}
+              />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/ResumeRoot"
+          element={
+            <CareerLayout>
+              <ResumeRoot />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/ResumeHome"
+          element={
+            <CareerLayout>
+              <ResumeHome />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-summary"
+          element={
+            <CareerLayout>
+              <ResumeSummary />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-experience"
+          element={
+            <CareerLayout>
+              <ResumeExperience />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-education"
+          element={
+            <CareerLayout>
+              <ResumeEducation />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-skills"
+          element={
+            <CareerLayout>
+              <ResumeSkills />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/resume-final"
+          element={
+            <CareerLayout>
+              <ResumeFinal />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <CareerLayout>
+              <Profile />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <CareerLayout>
+              <Settings />
+            </CareerLayout>
+          }
+        />
+        <Route
+          path="/templates"
+          element={
+            <CareerLayout>
+              <TemplatePicker onSelect={setSelectedTemplate} />
+            </CareerLayout>
+          }
+        />
+      </Routes>
+    </GoogleOAuthProvider>
   );
 }
 

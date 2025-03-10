@@ -14,6 +14,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     () => !!localStorage.getItem("authToken")
   );
 
+  console.log(
+    "AppProvider mounted at:",
+    new Date().toISOString(),
+    "with context:",
+    {
+      isAuthenticated,
+      setIsAuthenticated,
+    }
+  );
+
   return (
     <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
       {children}
@@ -23,6 +33,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAppContext = (): AppContextType => {
   const context = useContext(AppContext);
+  console.log(
+    "useAppContext called at:",
+    new Date().toISOString(),
+    "with context:",
+    context
+  );
   if (!context) {
     throw new Error("useAppContext must be used within an AppProvider");
   }
