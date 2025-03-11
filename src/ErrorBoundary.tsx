@@ -23,5 +23,4 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }> {
   }
 }
 
-// ✅ Ensure it's exported as default
 export default ErrorBoundary;
