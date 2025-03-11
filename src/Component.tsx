@@ -1,8 +1,4 @@
-import * as React from "react";
-import { ReactNode } from "react";
-const { createContext, useState, useContext } = React;
-
-console.log("React in context file:", React);
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface AppContextType {
   isAuthenticated: boolean;

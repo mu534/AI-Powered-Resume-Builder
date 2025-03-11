@@ -28,7 +28,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "font-awesome": "^4.7.0",
-    "framer-motion": "^12.4.10",
+    "framer-motion": "^12.4.11",
     "google-auth-library": "^9.15.1",
     "html-to-pdfmake": "^2.5.23",
     "html2canvas": "^1.4.1",
