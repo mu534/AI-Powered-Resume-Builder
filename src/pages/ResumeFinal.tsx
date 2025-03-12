@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PersonalDetails } from "../types";
 import htmlToPdfmake from "html-to-pdfmake";
@@ -90,23 +89,6 @@ const ResumeFinal: React.FC = () => {
   const phone = personalDetails.phone || "";
   const email = personalDetails.email || "";
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 },
-    },
-  };
-
   const summaryPoints = summary
     .split(/\.|\n/)
     .filter((point) => point.trim().length > 0)
@@ -158,11 +140,8 @@ const ResumeFinal: React.FC = () => {
   };
 
   return (
-    <motion.div
+    <div
       className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col items-center justify-start w-screen h-screen"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       style={{ padding: 0, margin: 0 }}
     >
       <style>
@@ -210,11 +189,8 @@ const ResumeFinal: React.FC = () => {
         </div>
       </nav>
 
-      <motion.div
-        className="flex-1 flex flex-col items-center justify-center w-full pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-14 mx-4 sm:mx-6 md:mx-10"
-        variants={itemVariants}
-      >
-        <motion.div className="text-center mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
+      <div className="flex-1 flex flex-col items-center justify-center w-full pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-14 mx-4 sm:mx-6 md:mx-10">
+        <div className="text-center mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-700">
             Congrats! Your Ultimate AI generated Resume is ready!
           </h2>
@@ -222,7 +198,7 @@ const ResumeFinal: React.FC = () => {
             Now you are ready to download your resume and you can share unique
             resume URL with your friends and family
           </p>
-        </motion.div>
+        </div>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
           <button
@@ -239,16 +215,12 @@ const ResumeFinal: React.FC = () => {
           </button>
         </div>
 
-        <motion.div
+        <div
           ref={resumeRef}
-          variants={itemVariants}
           className="bg-white rounded-lg shadow-lg max-w-sm sm:max-w-md md:max-w-lg lg:max-w-3xl w-full p-4 sm:p-6 md:p-8 font-sans text-sm overflow-auto resume-content"
           style={{ borderTop: `6px solid ${themeColor}` }}
         >
-          <motion.div
-            variants={itemVariants}
-            className="mb-6 sm:mb-8 text-center"
-          >
+          <div className="mb-6 sm:mb-8 text-center">
             <h1
               className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide"
               style={{ color: themeColor }}
@@ -269,10 +241,10 @@ const ResumeFinal: React.FC = () => {
               <span>{phone}</span>
               <span>{email}</span>
             </div>
-          </motion.div>
+          </div>
 
           {summaryPoints.length > 0 && (
-            <motion.section variants={itemVariants} className="mb-6 sm:mb-8">
+            <section className="mb-6 sm:mb-8">
               <h3
                 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
                 style={{ color: themeColor, borderColor: themeColor }}
@@ -289,11 +261,11 @@ const ResumeFinal: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </motion.section>
+            </section>
           )}
 
           {experiences.length > 0 && (
-            <motion.section variants={itemVariants} className="mb-6 sm:mb-8">
+            <section className="mb-6 sm:mb-8">
               <h3
                 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
                 style={{ color: themeColor, borderColor: themeColor }}
@@ -324,11 +296,11 @@ const ResumeFinal: React.FC = () => {
                   </ul>
                 </div>
               ))}
-            </motion.section>
+            </section>
           )}
 
           {educations.length > 0 && (
-            <motion.section variants={itemVariants} className="mb-6 sm:mb-8">
+            <section className="mb-6 sm:mb-8">
               <h3
                 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
                 style={{ color: themeColor, borderColor: themeColor }}
@@ -359,11 +331,11 @@ const ResumeFinal: React.FC = () => {
                   </ul>
                 </div>
               ))}
-            </motion.section>
+            </section>
           )}
 
           {skills.length > 0 && (
-            <motion.section variants={itemVariants} className="mb-6 sm:mb-8">
+            <section className="mb-6 sm:mb-8">
               <h3
                 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
                 style={{ color: themeColor, borderColor: themeColor }}
@@ -380,11 +352,11 @@ const ResumeFinal: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </motion.section>
+            </section>
           )}
-        </motion.div>
-      </motion.div>
-    </motion.div>
+        </div>
+      </div>
+    </div>
   );
 };
 

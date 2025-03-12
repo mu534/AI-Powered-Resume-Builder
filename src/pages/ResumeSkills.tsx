@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
@@ -122,12 +121,7 @@ const ResumeSkills: React.FC = () => {
   };
 
   return (
-    <motion.div
-      className="min-h-screen bg-white flex flex-col items-center justify-center p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
       <nav className="bg-white shadow-md w-full fixed top-0 z-10">
         <div className=" flex justify-end max-w-6xl mx-auto px-4 py-4  items-center">
           <Link
@@ -139,14 +133,9 @@ const ResumeSkills: React.FC = () => {
         </div>
       </nav>
 
-      <motion.div className="pt-20 pb-12 px-4 flex-1 flex items-center justify-center w-full max-w-6xl">
+      <div className="pt-20 pb-12 px-4 flex-1 flex items-center justify-center w-full max-w-6xl">
         <div className="flex flex-col md:flex-row gap-8 w-full">
-          <motion.div
-            className="bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2 border border-gray-200"
-            initial={{ x: -50 }}
-            animate={{ x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2 border border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Skills</h2>
             <p className="text-gray-600 mb-4">Add Your skills details</p>
             {error && (
@@ -218,14 +207,9 @@ const ResumeSkills: React.FC = () => {
             >
               Back
             </button>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200"
-            initial={{ x: 50 }}
-            animate={{ x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
             <ResumePreview
               personalDetails={personalDetails}
               themeColor={themeColor}
@@ -237,10 +221,10 @@ const ResumeSkills: React.FC = () => {
               fontSize={fontSize}
               fontColor={fontColor}
             />
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

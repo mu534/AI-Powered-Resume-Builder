@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import ResumePreview from "../components/ResumePreview";
 import "font-awesome/css/font-awesome.min.css";
@@ -61,22 +60,11 @@ const ResumeHome: React.FC = () => {
     setIsThemeModalOpen(false);
   };
 
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.8 } },
-  };
-
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={fadeIn}
-      className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col items-center justify-center p-4"
-    >
+    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col items-center justify-center p-4">
       {/* Navbar */}
       <nav className="bg-white shadow-md w-full z-10 top-0 fixed">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-end items-center">
           <div className="flex items-center space-x-2"></div>
           <Link
             to="/"
@@ -88,15 +76,9 @@ const ResumeHome: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-        className="pt-20 pb-12 px-4 flex-1 flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl gap-8"
-      >
+      <div className="pt-20 pb-12 px-4 flex-1 flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl gap-8">
         {/* Left Panel - Personal Details Form */}
-        <motion.div
-          variants={fadeIn}
+        <div
           className="bg-white p-6 rounded-lg shadow-lg w-full lg:w-1/2 border border-gray-200"
           style={{ borderRadius: "10px", borderColor: themeColor }}
         >
@@ -187,11 +169,10 @@ const ResumeHome: React.FC = () => {
               Next →
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Right Panel - Resume Preview */}
-        <motion.div
-          variants={fadeIn}
+        <div
           className="w-full lg:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200 mt-8 lg:mt-0"
           style={{
             borderRadius: "10px",
@@ -211,23 +192,13 @@ const ResumeHome: React.FC = () => {
             education={[]}
             skills={[]}
           />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Theme Color Modal */}
       {isThemeModalOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full"
-          >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
             <h2 className="text-xl font-bold mb-4 text-gray-900">
               Select Theme Color
             </h2>
@@ -248,10 +219,10 @@ const ResumeHome: React.FC = () => {
             >
               Close
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

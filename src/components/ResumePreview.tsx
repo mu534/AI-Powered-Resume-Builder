@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { motion } from "framer-motion";
 import { PersonalDetails } from "../types";
 
 interface Experience {
@@ -57,27 +56,6 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
   const email = personalDetails.email || "mudassirnajimudin@gmail.com | ";
   const phone = personalDetails.phone || "0935815070";
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 },
-    },
-  };
-
   const summaryPoints = summary
     .split(/\.|\n/)
     .filter((point) => point.trim().length > 0)
@@ -96,14 +74,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
       .map((point) => point.trim() + ".");
 
   return (
-    <motion.div
+    <div
       ref={resumeRef}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
       className="bg-white rounded-lg shadow-md w-full max-w-2xl mx-auto p-6 font-sans text-sm"
     >
-      <motion.div variants={itemVariants} className="mb-6 text-center">
+      <div className="mb-6 text-center">
         <h1
           className="text-2xl font-bold uppercase tracking-wide"
           style={{ color: themeColor, fontSize: `${fontSize + 4}px` }}
@@ -125,10 +100,10 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
             {email} | {phone}
           </span>
         </div>
-      </motion.div>
+      </div>
 
       {summaryPoints.length > 0 && (
-        <motion.section variants={itemVariants} className="mb-6">
+        <section className="mb-6">
           <h3
             className="text-lg font-semibold mb-2 border-b-2 pb-1"
             style={{
@@ -147,11 +122,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
               <li key={index}>{point}</li>
             ))}
           </ul>
-        </motion.section>
+        </section>
       )}
 
       {experience.length > 0 && (
-        <motion.section variants={itemVariants} className="mb-6">
+        <section className="mb-6">
           <h3
             className="text-lg font-semibold mb-2 border-b-2 pb-1"
             style={{
@@ -186,11 +161,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
               </ul>
             </div>
           ))}
-        </motion.section>
+        </section>
       )}
 
       {education.length > 0 && (
-        <motion.section variants={itemVariants} className="mb-6">
+        <section className="mb-6">
           <h3
             className="text-lg font-semibold mb-2 border-b-2 pb-1"
             style={{
@@ -225,11 +200,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
               </ul>
             </div>
           ))}
-        </motion.section>
+        </section>
       )}
 
       {skills.length > 0 && (
-        <motion.section variants={itemVariants} className="mb-6">
+        <section className="mb-6">
           <h3
             className="text-lg font-semibold mb-2 border-b-2 pb-1"
             style={{
@@ -250,9 +225,9 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({
               </li>
             ))}
           </ul>
-        </motion.section>
+        </section>
       )}
-    </motion.div>
+    </div>
   );
 };
 

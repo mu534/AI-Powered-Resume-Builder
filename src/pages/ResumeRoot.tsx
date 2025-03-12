@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import SavedResumeCard from "./SavedResumeCard";
 import { useAppContext } from "../AppContext"; // Adjust path if needed
@@ -25,47 +24,6 @@ const ResumeRoot: React.FC = () => {
     setSavedResumes(resumes);
   }, []);
 
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.8 } },
-  };
-
-  const slideUp = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
-
-  const magicCard = {
-    hidden: { opacity: 0, scale: 0.8, rotate: -10 },
-    visible: (i: number) => ({
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: {
-        delay: 0.5 + i * 0.3,
-        duration: 0.7,
-        ease: "easeOut",
-        type: "spring",
-        bounce: 0.4,
-      },
-    }),
-    hover: {
-      scale: 1.05,
-      boxShadow: "0 10px 20px rgba(0, 0, 255, 0.2)",
-      transition: { duration: 0.3 },
-    },
-  };
-
-  const modalVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-    exit: { opacity: 0, scale: 0.8, transition: { duration: 0.2 } },
-  };
-
   const handleCreateResume = () => {
     if (newResumeTitle.trim()) {
       console.log("Creating resume with title:", newResumeTitle);
@@ -86,15 +44,7 @@ const ResumeRoot: React.FC = () => {
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
       {/* Navbar */}
       <nav className="bg-white shadow-md fixed w-full z-10 top-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            className="text-2xl font-bold text-blue-600"
-          >
-            ResumeAI
-          </motion.div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center items-center">
           <div className="space-x-4">
             <Link
               to="/"
@@ -113,64 +63,27 @@ const ResumeRoot: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-        className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-center justify-center"
-      >
+      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-center justify-center">
         <div className="max-w-4xl w-full space-y-8 text-center">
-          <motion.h1
-            initial="hidden"
-            animate="visible"
-            variants={slideUp}
-            className="text-4xl font-bold text-gray-900 tracking-tight"
-          >
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
             My Resume
-          </motion.h1>
-          <motion.p
-            initial="hidden"
-            animate="visible"
-            variants={slideUp}
-            transition={{ delay: 0.2 }}
-            className="text-xl text-gray-600"
-          >
+          </h1>
+          <p className="text-xl text-gray-600">
             Start Creating AI Resume to your next job role
-          </motion.p>
+          </p>
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {/* Start Creating Card */}
-            <motion.div
-              custom={0}
-              initial="hidden"
-              animate="visible"
-              variants={magicCard}
-              whileHover="hover"
+            <div
               onClick={() => setIsModalOpen(true)}
               className="bg-gray-100 p-6 rounded-3xl shadow-md cursor-pointer flex flex-col items-center justify-center h-64 hover:bg-gray-200 transition-all"
             >
-              <motion.div
-                className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  x: ["-100%", "100%"],
-                  y: ["-100%", "100%"],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <div className="w-4 h-4 bg-blue-400 rounded-full filter blur-sm opacity-50" />
-              </motion.div>
               <span className="text-4xl text-gray-500 mb-4">+</span>
               <p className="text-lg font-medium text-gray-700">
                 Start Creating
               </p>
-            </motion.div>
+            </div>
 
             {/* Saved Resumes */}
             {savedResumes.map((resume, index) => (
@@ -184,33 +97,16 @@ const ResumeRoot: React.FC = () => {
             ))}
           </div>
 
-          <motion.p
-            initial="hidden"
-            animate="visible"
-            variants={slideUp}
-            transition={{ delay: 1 }}
-            className="text-gray-500 text-sm"
-          >
+          <p className="text-gray-500 text-sm">
             Select a resume or job role to begin your journey with ResumeAI.
-          </motion.p>
+          </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Create New Resume Modal */}
       {isModalOpen && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          variants={modalVariants}
-          className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50"
-        >
-          <motion.div
-            className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
+        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900">
                 Create New Resume
@@ -256,8 +152,8 @@ const ResumeRoot: React.FC = () => {
                 Create
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </div>
   );

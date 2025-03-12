@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
@@ -71,15 +70,10 @@ const ResumeSummary: React.FC = () => {
   };
 
   return (
-    <motion.div
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center justify-center p-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.7, ease: "easeInOut" }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center justify-center p-6">
       {/* Navbar */}
       <nav className="bg-white shadow-lg w-full fixed top-0 z-20 rounded-b-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-end items-center">
           <Link
             to="/Dashboard"
             className="text-gray-700 hover:text-purple-600 transition-colors duration-300 font-medium"
@@ -90,19 +84,9 @@ const ResumeSummary: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <motion.div
-        className="pt-24 pb-12 flex-1 w-full max-w-6xl flex flex-col md:flex-row gap-10"
-        initial={{ y: 20 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+      <div className="pt-24 pb-12 flex-1 w-full max-w-6xl flex flex-col md:flex-row gap-10">
         {/* Left Panel - Summary Form and Settings */}
-        <motion.div
-          className="bg-white p-8 rounded-2xl shadow-xl w-full md:w-1/2 border border-gray-100"
-          initial={{ x: -70 }}
-          animate={{ x: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
+        <div className="bg-white p-8 rounded-2xl shadow-xl w-full md:w-1/2 border border-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
             Craft Your Summary
           </h2>
@@ -195,15 +179,10 @@ const ResumeSummary: React.FC = () => {
               Next Step
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Right Panel - Resume Preview */}
-        <motion.div
-          className="w-full md:w-1/2 bg-white p-8 rounded-2xl shadow-xl border border-gray-100"
-          initial={{ x: 70 }}
-          animate={{ x: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
+        <div className="w-full md:w-1/2 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
             Live Preview
           </h3>
@@ -218,17 +197,12 @@ const ResumeSummary: React.FC = () => {
             education={[]}
             skills={[]}
           />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Theme Modal */}
       {isThemeModalOpen && (
-        <motion.div
-          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center">
           <div className="bg-white p-8 rounded-2xl shadow-2xl">
             <h3 className="text-xl font-bold text-gray-900 mb-4">
               Select Theme Color
@@ -246,9 +220,9 @@ const ResumeSummary: React.FC = () => {
               Close
             </button>
           </div>
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

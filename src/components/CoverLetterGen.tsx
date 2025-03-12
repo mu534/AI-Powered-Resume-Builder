@@ -144,18 +144,21 @@ const CoverLetterGen: React.FC = () => {
 
       {isEditing ? (
         <div className="space-y-4">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Recipient
-            </label>
-            <input
-              type="text"
-              value={form.recipient}
-              onChange={(e) => handleChange("recipient", e.target.value)}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              placeholder="e.g., Hiring Manager"
-            />
-          </div>
+          {Object.keys(form).map((key) => (
+            <div key={key}>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </label>
+              <input
+                type="text"
+                value={form[key as keyof CoverLetterForm]}
+                onChange={(e) =>
+                  handleChange(key as keyof CoverLetterForm, e.target.value)
+                }
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+          ))}
         </div>
       ) : (
         <textarea
