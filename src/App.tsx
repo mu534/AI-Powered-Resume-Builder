@@ -49,7 +49,7 @@ const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
     isAuthenticated
   );
 
-  if (!isAuthenticated) return <Navigate to="/signin" replace />;
+  if (!isAuthenticated) return <Navigate to="/signup" replace />;
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
