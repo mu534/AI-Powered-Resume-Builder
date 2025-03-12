@@ -5,11 +5,13 @@ interface SavedResumeCardProps {
   title: string;
   createdAt: string;
   content: string;
+  index: number;
 }
 
 const SavedResumeCard: React.FC<SavedResumeCardProps> = ({
   title,
   createdAt,
+  index, // Destructure index
 }) => {
   return (
     <Link to={`/resume-editor?title=${encodeURIComponent(title)}`}>
@@ -21,7 +23,7 @@ const SavedResumeCard: React.FC<SavedResumeCardProps> = ({
         />
         <p className="text-lg font-medium text-white">{title}</p>
         <span className="mt-2 text-sm font-semibold text-white bg-blue-600 rounded-full px-3 py-1">
-          Created on {new Date(createdAt).toLocaleDateString()}
+          #{index} - Created on {new Date(createdAt).toLocaleDateString()}
         </span>
       </div>
     </Link>
