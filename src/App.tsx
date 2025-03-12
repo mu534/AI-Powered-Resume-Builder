@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import SignIn from "./HomePage/Signin";
 import SignUp from "./HomePage/SignUp ";
+import SignIn from "./HomePage/Signin";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import TemplatePicker from "./pages/TemplatePicker";
@@ -72,18 +72,18 @@ function App() {
     <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
       <Routes>
         <Route
-          path="/signin"
-          element={
-            <AuthLayout title="Sign In">
-              <SignIn setIsAuthenticated={setIsAuthenticated} />
-            </AuthLayout>
-          }
-        />
-        <Route
           path="/signup"
           element={
             <AuthLayout title="Sign Up">
               <SignUp setIsAuthenticated={setIsAuthenticated} />
+            </AuthLayout>
+          }
+        />
+        <Route
+          path="/signin"
+          element={
+            <AuthLayout title="Sign In">
+              <SignIn setIsAuthenticated={setIsAuthenticated} />
             </AuthLayout>
           }
         />
