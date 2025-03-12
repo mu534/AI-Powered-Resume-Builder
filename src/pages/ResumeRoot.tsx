@@ -82,7 +82,7 @@ const ResumeRoot: React.FC = () => {
                 title={resume.name}
                 createdAt={resume.createdAt}
                 index={index + 1}
-                content={""}
+                content={resume.content} // Ensure content is passed correctly
               />
             ))}
           </div>

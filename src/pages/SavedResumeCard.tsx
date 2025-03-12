@@ -21,7 +21,31 @@ const SavedResumeCard: React.FC<SavedResumeCardProps> = ({
           #{index} - Created on {new Date(createdAt).toLocaleDateString()}
         </span>
 
-        {content && <div className="mt-4 text-white text-sm">{content}</div>}
+        {content && (
+          <div className="mt-4 text-white text-sm">
+            <p>
+              <strong>Personal:</strong>
+            </p>
+            <p>Name: {content.personal.name}</p>
+            <p>Email: {content.personal.email}</p>
+            <p>Phone: {content.personal.phone}</p>
+            <p>Summary: {content.personal.summary}</p>
+            <p>
+              <strong>Experience:</strong>
+            </p>
+            {content.experience.map((exp, idx) => (
+              <div key={idx}>
+                <p>Title: {exp.title}</p>
+                <p>Company: {exp.company}</p>
+                <p>Dates: {exp.dates}</p>
+                <p>Description: {exp.description}</p>
+              </div>
+            ))}
+            <p>
+              <strong>Skills:</strong> {content.skills.join(", ")}
+            </p>
+          </div>
+        )}
       </div>
     </Link>
   );

@@ -38,6 +38,20 @@ export interface CoverLetter {
 export interface SavedResumeCardProps {
   title: string;
   createdAt: string;
-  content: string;
+  content: {
+    personal: {
+      name: string;
+      email: string;
+      phone: string;
+      summary: string;
+    };
+    experience: {
+      title: string;
+      company: string;
+      dates: string;
+      description: string;
+    }[];
+    skills: string[];
+  };
   index: number;
 }
