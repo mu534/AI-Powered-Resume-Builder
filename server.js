@@ -57,6 +57,32 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Sign In Route (Added)
+app.post("/signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: "Please provide email and password." });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    res.json({ message: "Signin successful", token: "dummy-token" });
+  } catch (error) {
+    console.error("❌ Signin Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Test Route (for debugging)
+app.get("/test", (req, res) => res.send("Server is alive!"));
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

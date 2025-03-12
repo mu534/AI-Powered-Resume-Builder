@@ -44,7 +44,8 @@ const ResumeRoot: React.FC = () => {
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
       {/* Navbar */}
       <nav className="bg-white shadow-md fixed w-full z-10 top-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center items-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="text-2xl font-bold text-blue-600">ResumeAI</div>
           <div className="space-x-4">
             <Link
               to="/"
@@ -91,7 +92,6 @@ const ResumeRoot: React.FC = () => {
                 key={index}
                 title={resume.title}
                 createdAt={resume.createdAt}
-                index={index + 1}
                 content={""}
               />
             ))}
