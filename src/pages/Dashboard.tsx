@@ -13,7 +13,7 @@ const templates: Template[] = [
     name: "Sleek Modern",
     preview: bold,
     styles: {
-      bg: "bg-gray-100",
+      bg: "bg-gradient-to-br from-gray-100 to-gray-200",
       text: "text-gray-900",
       accent: "border-indigo-500",
     },
@@ -23,7 +23,7 @@ const templates: Template[] = [
     name: "Bold Creative",
     preview: creative,
     styles: {
-      bg: "bg-blue-100",
+      bg: "bg-gradient-to-br from-blue-100 to-blue-200",
       text: "text-blue-900",
       accent: "border-blue-500",
     },
@@ -32,7 +32,11 @@ const templates: Template[] = [
     id: "t3",
     name: "Classic Professional",
     preview: classic,
-    styles: { bg: "bg-white", text: "text-black", accent: "border-gray-500" },
+    styles: {
+      bg: "bg-gradient-to-br from-white to-gray-50",
+      text: "text-black",
+      accent: "border-gray-500",
+    },
   },
 ];
 
@@ -50,12 +54,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     templates.find((t) => t.id === selectedTemplate) || templates[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-white  to-gray-100 ">
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
       {/* Navbar */}
-      <nav className="bg-white shadow-md fixed w-full z-10 top-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4  flex justify-end">
+      <nav className="bg-white shadow-lg fixed w-full z-10 top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-end">
           <Link to="/ResumeRoot">
-            <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 mr-8">
+            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105">
               Go to Resume Editor
             </button>
           </Link>
@@ -63,53 +67,58 @@ const Dashboard: React.FC<DashboardProps> = ({
       </nav>
 
       {/* Main Content */}
-      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 min-h-screen">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 min-h-screen">
+        <div className="max-w-6xl mx-auto space-y-12">
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight text-center mt-15">
-            Welcome to <span className="text-blue-600">ResumeAI</span>
-          </h1>
-          <p className="text-xl text-gray-600 text-center">
-            Craft Your Perfect Resume with AI Precision
-          </p>
+          <div className="text-center">
+            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 tracking-tight">
+              Welcome to{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                ResumeAI
+              </span>
+            </h1>
+            <p className="mt-4 text-xl text-gray-600">
+              Craft Your Perfect Resume with AI Precision
+            </p>
+          </div>
 
           {/* Template Preview Section */}
           <div
-            className="p-4 rounded-xl shadow-lg bg-white flex flex-col md:flex-row items-center justify-between cursor-pointer hover:bg-gray-50 transition-all max-w-3xl mx-auto"
+            className="p-6 rounded-2xl shadow-xl bg-white hover:shadow-2xl transition-all duration-300 max-w-3xl mx-auto cursor-pointer"
             onClick={() => navigate("/templates")}
           >
-            <div className="flex-1 text-center md:text-left mb-4 md:mb-0">
-              <h2 className="text-xl font-semibold text-indigo-900">
-                <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl font-semibold text-gray-900">
                   Selected Template
-                </button>
-              </h2>
-              <p
-                className={`text-lg font-medium mt-2 ${currentTemplate.styles.text}`}
+                </h2>
+                <p
+                  className={`text-xl font-medium mt-2 ${currentTemplate.styles.text}`}
+                >
+                  {currentTemplate.name}
+                </p>
+              </div>
+              <div
+                className={`w-64 h-64 md:w-80 md:h-80 rounded-2xl ${currentTemplate.styles.bg} ${currentTemplate.styles.accent} border-4 overflow-hidden transform hover:scale-105 transition-all duration-300`}
               >
-                {currentTemplate.name}
-              </p>
-            </div>
-            <div
-              className={`w-64 h-64 md:w-80 md:h-80 rounded-lg ${currentTemplate.styles.bg} ${currentTemplate.styles.accent} border-2`}
-            >
-              <img
-                src={currentTemplate.preview}
-                alt={currentTemplate.name}
-                className="w-full h-full object-cover rounded-lg"
-              />
+                <img
+                  src={currentTemplate.preview}
+                  alt={currentTemplate.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
 
           {/* Quick Template Selector */}
           <div className="max-w-3xl mx-auto text-center">
-            <label className="block text-indigo-900 font-semibold mb-2">
+            <label className="block text-gray-900 font-semibold mb-3 text-lg">
               Quick Select Template
             </label>
             <select
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
-              className="w-full max-w-xs p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mx-auto block"
+              className="w-full max-w-xs p-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
             >
               {templates.map((template) => (
                 <option key={template.id} value={template.id}>
@@ -120,27 +129,26 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {/* Cover Letter Generator */}
-          <div className="rounded-lg shadow-md">
+          <div className="rounded-2xl shadow-lg bg-white p-6">
             <CoverLetterGen />
           </div>
 
           {/* Call to Action */}
-          <div className="text-center max-w-3xl mx-auto space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-800">
+          <div className="text-center max-w-3xl mx-auto space-y-6">
+            <h2 className="text-3xl font-bold text-gray-900">
               Ready to Enhance Your Career?
             </h2>
-            <p className="text-gray-600">
+            <p className="text-xl text-gray-600">
               Start building your future today with ResumeAI’s powerful tools!
             </p>
             <Link to="/ResumeRoot">
-              <button className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+              <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105">
                 Go to Resume Editor
               </button>
             </Link>
           </div>
 
           {/* Footer */}
-
           <Footer />
         </div>
       </div>

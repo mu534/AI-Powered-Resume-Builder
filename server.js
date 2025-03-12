@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import cors from "cors";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -16,74 +16,35 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-mongoose.connection.on("error", (err) => {
-  console.error("❌ MongoDB Connection Error:", err);
-});
-
-// User schema
+// User Schema
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  language: { type: String, default: "English" },
 });
 
 const User = mongoose.model("User", userSchema);
 
-// Sign Up Route
-app.post("/signup", async (req, res) => {
+// Get Language Route (No Authentication needed)
+app.get("/api/language", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: "Please fill out all fields." });
+    // Fetch language from the database or use a default value
+    const user = await User.findOne();
+    if (!user) {
+      return res.json({ language: "English" });
     }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email is already taken." });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
-    await newUser.save();
-
-    res.status(201).json({ message: "User created successfully" });
+    res.json({ language: user.language });
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ error: "Email is already taken." });
-    }
-    console.error("❌ Server Error:", error);
+    console.error("❌ Get Language Error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Sign In Route (Added)
-app.post("/signin", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Please provide email and password." });
-    }
-
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: "Invalid email or password." });
-    }
-
-    res.json({ message: "Signin successful", token: "dummy-token" });
-  } catch (error) {
-    console.error("❌ Signin Error:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Test Route (for debugging)
+// Test Route
 app.get("/test", (req, res) => res.send("Server is alive!"));
 
-// Start server
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);

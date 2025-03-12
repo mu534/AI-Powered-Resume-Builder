@@ -1,10 +1,21 @@
-import React, { useState } from "react";
-import { Link } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Profile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [name, setName] = useState("ResumeAI");
-  const email = "Example@example.com";
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Load profile data from localStorage on component mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem("profile");
+    if (savedProfile) {
+      const { name, email, profileImage } = JSON.parse(savedProfile);
+      setName(name);
+      setEmail(email);
+      setProfileImage(profileImage);
+    }
+  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -12,29 +23,32 @@ const Profile: React.FC = () => {
       reader.onload = (e) => {
         const image = e.target?.result as string;
         setProfileImage(image);
-        saveProfileData(name, image);
+        saveProfileData(name, email, image);
       };
       reader.readAsDataURL(event.target.files[0]);
     }
   };
 
   const handleSave = () => {
-    saveProfileData(name, profileImage);
-    alert("Profile saved successfully!");
+    saveProfileData(name, email, profileImage);
   };
 
-  const saveProfileData = (name: string, profileImage: string | null) => {
-    const profileData = { name, profileImage };
+  const saveProfileData = (
+    name: string,
+    email: string,
+    profileImage: string | null
+  ) => {
+    const profileData = { name, email, profileImage };
     localStorage.setItem("profile", JSON.stringify(profileData));
     // Dispatch a custom event to notify other components
-    window.dispatchEvent(new Event("storage"));
+    window.dispatchEvent(new Event("profileUpdated"));
   };
 
   return (
     <>
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <nav className="bg-white shadow-md fixed  z-10 top-0 items-center justify-center">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <nav className="bg-white shadow-md fixed z-10 top-0 items-center justify-center w-full">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center items-center">
             <div className="space-x-4">
               <Link
                 to="/"
@@ -87,7 +101,7 @@ const Profile: React.FC = () => {
               type="email"
               className="w-full px-3 py-2 border rounded mt-1"
               value={email}
-              readOnly
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 

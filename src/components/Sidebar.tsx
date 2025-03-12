@@ -8,9 +8,6 @@ import {
   FaBars,
   FaTimes,
   FaUser,
-  FaChartBar,
-  FaMoon,
-  FaSun,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -19,7 +16,6 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [profile, setProfile] = useState<{
     name: string;
     email: string;
@@ -35,23 +31,30 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
   useEffect(() => {
     const savedProfile = localStorage.getItem("profile");
     if (savedProfile) {
-      const { name, profileImage } = JSON.parse(savedProfile);
-      setProfile((prev) => ({
-        ...prev,
-        name,
-        profileImage,
-      }));
+      const { name, email, profileImage } = JSON.parse(savedProfile);
+      setProfile({ name, email, profileImage });
     }
     setIsLoading(false);
   }, []);
 
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const savedProfile = localStorage.getItem("profile");
+      if (savedProfile) {
+        const { name, email, profileImage } = JSON.parse(savedProfile);
+        setProfile({ name, email, profileImage });
+      }
+    };
+
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("profileUpdated", handleProfileUpdate);
+    };
+  }, []);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
   };
 
   return (
@@ -74,21 +77,21 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
         </h2>
 
         {/* Profile Section */}
-        <div className="flex items-center gap-3 mb-6 p-4 bg-indigo-700 rounded-lg hover:bg-indigo-600 transition-all duration-200">
-          <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center overflow-hidden">
+        <div className="flex flex-col items-center gap-3 mb-6 p-4 bg-indigo-700 rounded-lg hover:bg-indigo-600 transition-all duration-200">
+          <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center overflow-hidden">
             {isLoading ? (
               <div className="animate-pulse bg-gray-500 w-full h-full"></div>
             ) : profile.profileImage ? (
               <img
                 src={profile.profileImage}
                 alt="Profile"
-                className="w-full h-full  object-cover"
+                className="w-full h-full object-cover"
               />
             ) : (
               <FaUser size={32} />
             )}
           </div>
-          <div>
+          <div className="text-center">
             <p className="text-lg font-semibold">
               {isLoading ? "Loading..." : profile.name}
             </p>
@@ -101,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
         {/* Navigation Links */}
         <nav className="space-y-4">
           <Link
-            to="/dashboard"
+            to="/"
             className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-indigo-600 transition-all duration-200"
             onClick={() => setIsSidebarOpen(false)}
           >
@@ -114,13 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
           >
             <FaUser /> Profile
           </Link>
-          <Link
-            to="/analytics"
-            className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-indigo-600 transition-all duration-200"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <FaChartBar /> Analytics
-          </Link>
+
           <Link
             to="/settings"
             className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-indigo-600 transition-all duration-200"
@@ -129,15 +126,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
             <FaCog /> Settings
           </Link>
         </nav>
-
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleDarkMode}
-          className="mt-6 flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-all duration-200"
-        >
-          {isDarkMode ? <FaSun /> : <FaMoon />}
-          {isDarkMode ? "Light Mode" : "Dark Mode"}
-        </button>
 
         {/* Logout Button */}
         <button
@@ -148,9 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
         </button>
 
         {/* Footer */}
-        <div className="mt-4 text-sm opacity-75">
-          v1.0 - Powered by NATIVE-X
-        </div>
+        <div className="mt-4 text-sm opacity-75">Powered by NATIVE-X</div>
       </div>
 
       {/* Overlay for Small Screens */}
