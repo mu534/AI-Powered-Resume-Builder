@@ -1,17 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
-interface SavedResumeCardProps {
-  title: string;
-  createdAt: string;
-  content: string;
-  index: number;
-}
+import { SavedResumeCardProps } from "../types/index";
 
 const SavedResumeCard: React.FC<SavedResumeCardProps> = ({
   title,
   createdAt,
-  index, // Destructure index
+  index,
+  content,
 }) => {
   return (
     <Link to={`/resume-editor?title=${encodeURIComponent(title)}`}>
@@ -25,6 +20,8 @@ const SavedResumeCard: React.FC<SavedResumeCardProps> = ({
         <span className="mt-2 text-sm font-semibold text-white bg-blue-600 rounded-full px-3 py-1">
           #{index} - Created on {new Date(createdAt).toLocaleDateString()}
         </span>
+
+        {content && <div className="mt-4 text-white text-sm">{content}</div>}
       </div>
     </Link>
   );

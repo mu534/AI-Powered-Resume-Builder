@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SavedResumeCard from "./SavedResumeCard";
-import { useAppContext } from "../AppContext"; // Adjust path if needed
-
-interface Resume {
-  title: string;
-  createdAt: string;
-}
+import { Resume } from "../types"; // Import Resume type
+import { useAppContext } from "../AppContext";
 
 const ResumeRoot: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,11 +10,9 @@ const ResumeRoot: React.FC = () => {
   const [savedResumes, setSavedResumes] = useState<Resume[]>([]);
   const navigate = useNavigate();
 
-  // Debug: Check if context is available
   const context = useAppContext();
   console.log("ResumeRoot: Context available:", context);
 
-  // Load saved resumes from localStorage on component mount
   useEffect(() => {
     const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
     setSavedResumes(resumes);
@@ -42,7 +36,6 @@ const ResumeRoot: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-      {/* Navbar */}
       <nav className="bg-white shadow-md fixed w-full z-10 top-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold text-blue-600">ResumeAI</div>
@@ -63,7 +56,6 @@ const ResumeRoot: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-center justify-center">
         <div className="max-w-4xl w-full space-y-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
@@ -73,9 +65,7 @@ const ResumeRoot: React.FC = () => {
             Start Creating AI Resume to your next job role
           </p>
 
-          {/* Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {/* Start Creating Card */}
             <div
               onClick={() => setIsModalOpen(true)}
               className="bg-gray-100 p-6 rounded-3xl shadow-md cursor-pointer flex flex-col items-center justify-center h-64 hover:bg-gray-200 transition-all"
@@ -86,12 +76,12 @@ const ResumeRoot: React.FC = () => {
               </p>
             </div>
 
-            {/* Saved Resumes */}
             {savedResumes.map((resume, index) => (
               <SavedResumeCard
                 key={index}
-                title={resume.title}
+                title={resume.name}
                 createdAt={resume.createdAt}
+                index={index + 1}
                 content={""}
               />
             ))}
@@ -103,7 +93,6 @@ const ResumeRoot: React.FC = () => {
         </div>
       </div>
 
-      {/* Create New Resume Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">

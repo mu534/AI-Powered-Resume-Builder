@@ -1,6 +1,7 @@
 export interface Resume {
   id: string;
   name: string;
+  createdAt: string;
   content: {
     personal: { name: string; email: string; phone: string; summary?: string };
     experience: Array<{
@@ -14,16 +15,6 @@ export interface Resume {
   };
   templateId: string;
   strengthScore?: number;
-}
-
-export interface Job {
-  id: string;
-  title: string;
-  company: string;
-  description: string;
-  status: "Applied" | "Interview" | "Offer" | "Rejected";
-  matchScore: number;
-  appliedDate?: string;
 }
 
 export interface Template {
@@ -42,4 +33,11 @@ export interface CoverLetter {
   jobId: string;
   content: string;
   tone: "Formal" | "Conversational" | "Bold";
+}
+
+export interface SavedResumeCardProps {
+  title: string;
+  createdAt: string;
+  content: string;
+  index: number;
 }

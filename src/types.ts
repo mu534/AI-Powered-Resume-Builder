@@ -9,6 +9,7 @@ export interface PersonalDetails {
 }
 
 export interface Resume {
+  createdAt: string;
   id: string;
   name: string;
   content: {
