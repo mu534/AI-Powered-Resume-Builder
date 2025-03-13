@@ -13,7 +13,7 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
 
   // Handle manual email sign-in with password
-  const handleManualSignIn = () => {
+  const handleManualSignIn = async () => {
     if (!email || !password) {
       setError("Please enter both your email address and password.");
       return;
@@ -28,22 +28,36 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
     setIsLoading(true);
     setError(null);
 
-    // Simulate a backend email and password check
-    setTimeout(() => {
-      const isValidUser =
-        email === "existinguser@example.com" && password === "password123"; // Example credentials
+    try {
+      // Make the API request to sign in
+      const response = await fetch(
+        "https://resumebooster.onrender.com/signin",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
-      if (isValidUser) {
-        console.log("User signed in:", email);
-        localStorage.setItem("authToken", "dummy-token"); // Simulate token storage
+      const data = await response.json();
+
+      if (response.ok) {
+        // Save the token to localStorage and update auth state
+        localStorage.setItem("authToken", data.token);
         setIsAuthenticated(true); // Update auth state
+        console.log("User signed in:", email);
         navigate("/"); // Redirect to Dashboard
       } else {
-        setError("The email or password is incorrect. Please try again.");
+        setError(data.message || "Sign-in failed. Please try again.");
       }
-
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+      setError("An error occurred during sign-in.");
+    } finally {
       setIsLoading(false);
-    }, 1000); // Simulate 1-second delay
+    }
   };
 
   return (
