@@ -67,14 +67,14 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="p-6 ml-20 mt-10 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-extrabold ml-30 text-indigo-900 mb-8">
+    <div className="p-6 ml-20 mt-10  bg-gray-100 min-h-screen">
+      <h1 className="text-4xl font-extrabold ml-30  text-indigo-900 mb-8 ">
         Settings
       </h1>
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-md">
         <h3 className="text-xl font-semibold mb-4">Preferences</h3>
         <form onSubmit={handleSubmit}>
-          <label className="block mb-2 font-medium">Language</label>
+          <label className="block mb-2  font-medium">Language</label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}

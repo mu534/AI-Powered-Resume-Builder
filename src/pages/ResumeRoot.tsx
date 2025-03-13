@@ -37,8 +37,7 @@ const ResumeRoot: React.FC = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
       <nav className="bg-white shadow-md fixed w-full z-10 top-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-blue-600">ResumeAI</div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center items-center">
           <div className="space-x-4">
             <Link
               to="/"
