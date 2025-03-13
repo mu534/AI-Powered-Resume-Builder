@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import cors from "cors";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import path from "path"; // Add this for file paths
 
 dotenv.config();
 
@@ -27,10 +28,12 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-// Get Language Route (No Authentication needed)
+// Serve static files from 'dist' (Vite build output)
+app.use(express.static(path.join(__dirname, "dist")));
+
+// API Routes
 app.get("/api/language", async (req, res) => {
   try {
-    // Fetch language from the database or use a default value
     const user = await User.findOne();
     if (!user) {
       return res.json({ language: "English" });
@@ -42,26 +45,19 @@ app.get("/api/language", async (req, res) => {
   }
 });
 
-// Sign Up Route
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
-
   if (!name || !email || !password) {
     return res.status(400).json({ error: "All fields are required." });
   }
-
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already in use." });
     }
-
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
-
     res.status(201).json({ message: "User created successfully!" });
   } catch (error) {
     console.error("❌ Sign Up Error:", error);
@@ -69,33 +65,25 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// Sign In Route
 app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required." });
   }
-
   try {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: "Invalid email or password." });
     }
-
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid email or password." });
     }
-
-    // Create JWT token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "1h" }
     );
-
     res.json({ message: "Sign-in successful", token });
   } catch (error) {
     console.error("❌ Sign In Error:", error);
@@ -103,8 +91,12 @@ app.post("/signin", async (req, res) => {
   }
 });
 
-// Test Route
 app.get("/test", (req, res) => res.send("Server is alive!"));
+
+// Catch-all route for SPA: Serve index.html for non-API routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 // Start Server
 const PORT = process.env.PORT || 5000;
