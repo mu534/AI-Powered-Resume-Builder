@@ -4,9 +4,14 @@ import bcrypt from "bcryptjs";
 import cors from "cors";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import path from "path"; // Add this for file paths
+import path from "path";
+import { fileURLToPath } from "url"; // Import this to handle paths in ESM
 
 dotenv.config();
+
+// Derive __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -95,7 +100,14 @@ app.get("/test", (req, res) => res.send("Server is alive!"));
 
 // Catch-all route for SPA: Serve index.html for non-API routes
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  const filePath = path.join(__dirname, "dist", "index.html");
+  console.log(`Attempting to serve: ${filePath}`);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error(`Failed to serve ${filePath}:`, err);
+      res.status(500).send("Internal Server Error");
+    }
+  });
 });
 
 // Start Server
