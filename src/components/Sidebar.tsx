@@ -4,7 +4,6 @@ import {
   FaHome,
   FaCog,
   FaRocket,
-  FaSignOutAlt,
   FaBars,
   FaTimes,
   FaUser,
@@ -14,7 +13,7 @@ interface SidebarProps {
   onLogout: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
+const Sidebar: React.FC<SidebarProps> = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [profile, setProfile] = useState<{
     name: string;
@@ -126,14 +125,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
             <FaCog /> Settings
           </Link>
         </nav>
-
-        {/* Logout Button */}
-        <button
-          onClick={onLogout}
-          className="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-red-600 transition-all duration-200"
-        >
-          <FaSignOutAlt /> Logout
-        </button>
 
         {/* Footer */}
         <div className="mt-4 text-sm opacity-75">Powered by NATIVE-X</div>

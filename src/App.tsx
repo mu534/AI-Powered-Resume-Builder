@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import SignUp from "./HomePage/SignUp ";
-import SignIn from "./HomePage/Signin";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
-import TemplatePicker from "./pages/TemplatePicker";
+
 import Sidebar from "./components/Sidebar";
 import ResumeRoot from "./pages/ResumeRoot";
 import ResumeHome from "./pages/ResumeHome";
@@ -17,30 +15,11 @@ import ResumeSkills from "./pages/ResumeSkills";
 import Profile from "./pages/Profile";
 import { useAppContext } from "./AppContext";
 
-const AuthLayout: React.FC<{ children: React.ReactNode; title: string }> = ({
-  children,
-  title,
-}) => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-gray-100 flex items-center justify-center p-6">
-      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full transform hover:scale-105 transition-all duration-300">
-        <h1 className="text-3xl font-extrabold text-indigo-900 mb-6 text-center">
-          {title}
-        </h1>
-        {children}
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Powered by{" "}
-          <span className="font-semibold text-indigo-600">Native-X</span>
-        </p>
-      </div>
-    </div>
-  );
-};
-
 const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   console.log("CareerLayout rendering at:", new Date().toISOString());
+
   const { isAuthenticated, setIsAuthenticated } = useAppContext();
   console.log(
     "CareerLayout: Context accessed at:",
@@ -48,8 +27,6 @@ const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
     "isAuthenticated:",
     isAuthenticated
   );
-
-  if (!isAuthenticated) return <Navigate to="/signup" replace />;
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -65,36 +42,14 @@ const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
 };
 
 function App() {
-  const { setIsAuthenticated } = useAppContext();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("t1");
-
   return (
     <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
       <Routes>
         <Route
-          path="/signup"
-          element={
-            <AuthLayout title="Sign Up">
-              <SignUp setIsAuthenticated={setIsAuthenticated} />
-            </AuthLayout>
-          }
-        />
-        <Route
-          path="/signin"
-          element={
-            <AuthLayout title="Sign In">
-              <SignIn setIsAuthenticated={setIsAuthenticated} />
-            </AuthLayout>
-          }
-        />
-        <Route
           path="/"
           element={
             <CareerLayout>
-              <Dashboard
-                selectedTemplate={selectedTemplate}
-                setSelectedTemplate={setSelectedTemplate}
-              />
+              <Dashboard />
             </CareerLayout>
           }
         />
@@ -167,14 +122,6 @@ function App() {
           element={
             <CareerLayout>
               <Settings />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/templates"
-          element={
-            <CareerLayout>
-              <TemplatePicker onSelect={setSelectedTemplate} />
             </CareerLayout>
           }
         />

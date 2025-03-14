@@ -40,20 +40,12 @@ const ResumeSummary: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    // Generate a default summary without API
-    const defaultSummary = `Experienced ${
-      personalDetails.jobTitle
-    } with a strong background in relevant skills and a proven track record of success. ${
-      personalDetails.firstName
-        ? `${personalDetails.firstName} ${personalDetails.lastName} is`
-        : "I am"
-    } eager to leverage expertise to contribute to innovative projects and achieve career goals in a dynamic environment.`;
+    const defaultSummary = `Experienced ${personalDetails.jobTitle} with a strong background in relevant skills and a proven track record of success. Eager to leverage expertise to contribute to innovative projects and achieve career goals in a dynamic environment.`;
 
     setTimeout(() => {
-      // Simulate a brief "loading" delay
       setSummary(defaultSummary);
       setLoading(false);
-    }, 1000); // 1-second delay for UX
+    }, 1000);
   };
 
   const handleNext = () => {
@@ -68,6 +60,9 @@ const ResumeSummary: React.FC = () => {
       },
     });
   };
+
+  // Check if summary is empty or only whitespace
+  const isSummaryEmpty = summary.trim() === "";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center justify-center p-6">
@@ -84,9 +79,9 @@ const ResumeSummary: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="pt-24 pb-12 flex-1 w-full max-w-6xl flex flex-col md:flex-row gap-10">
+      <div className="pt-24 pb-12 flex-1 w-full max-w-6xl flex flex-col md:flex-row gap-6 md:gap-10">
         {/* Left Panel - Summary Form and Settings */}
-        <div className="bg-white p-8 rounded-2xl shadow-xl w-full md:w-1/2 border border-gray-100">
+        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full border border-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
             Craft Your Summary
           </h2>
@@ -156,11 +151,11 @@ const ResumeSummary: React.FC = () => {
             <button
               onClick={generateSummary}
               className={`w-full py-3 rounded-lg flex items-center justify-center gap-3 text-white font-medium transition-all duration-300 ${
-                loading || !personalDetails.jobTitle
+                loading || !personalDetails.jobTitle || isSummaryEmpty
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl"
               }`}
-              disabled={loading || !personalDetails.jobTitle}
+              disabled={loading || !personalDetails.jobTitle || isSummaryEmpty}
             >
               {loading ? (
                 <span className="animate-pulse">Generating...</span>
@@ -182,7 +177,7 @@ const ResumeSummary: React.FC = () => {
         </div>
 
         {/* Right Panel - Resume Preview */}
-        <div className="w-full md:w-1/2 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+        <div className="w-full bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
             Live Preview
           </h3>

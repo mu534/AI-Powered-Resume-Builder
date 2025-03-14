@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import ResumePreview from "../components/ResumePreview";
 import "font-awesome/css/font-awesome.min.css";
 import { PersonalDetails } from "../types";
 
@@ -21,43 +20,40 @@ const ResumeHome: React.FC = () => {
 
   // State for theme color selection
   const [themeColor, setThemeColor] = useState("#9333ea"); // Default purple
-  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
 
   // Color options for the theme
   const colorOptions = [
-    { name: "Purple", value: "#9333ea" },
-    { name: "Blue", value: "#2563eb" },
-    { name: "Green", value: "#10b981" },
-    { name: "Red", value: "#ef4444" },
-    { name: "Orange", value: "#f59e0b" },
+    { value: "#9333ea", label: "Purple" },
+    { value: "#2563eb", label: "Blue" },
+    { value: "#f59e0b", label: "Amber" },
   ];
 
-  // Handle form input changes for personal details
+  // Handle form input changes for personal details with debugging
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(`Updating ${name} with value: ${value}`); // Debug log
     setPersonalDetails((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  // Handle "Next" navigation
+  // Handle "Next" navigation to summary
   const handleNext = () => {
     console.log("Navigating to next step with:", personalDetails);
-    // Navigate to the summary step with personalDetails and resumeTitle in state
     navigate("/resume-summary", { state: { personalDetails, resumeTitle } });
   };
 
-  // Handle "Save" for personal details (optional, for now logs to console)
+  // Handle "Save" for personal details and navigate to preview
   const handleSave = () => {
     console.log("Saving personal details:", personalDetails);
     alert("Personal details saved successfully!");
+    navigate("/resume-preview", { state: { personalDetails, resumeTitle } });
   };
 
-  // Handle theme selection
-  const handleThemeSelect = (color: string) => {
+  // Handle theme color change
+  const handleThemeChange = (color: string) => {
     setThemeColor(color);
-    setIsThemeModalOpen(false);
   };
 
   return (
@@ -80,22 +76,26 @@ const ResumeHome: React.FC = () => {
         {/* Left Panel - Personal Details Form */}
         <div
           className="bg-white p-6 rounded-lg shadow-lg w-full lg:w-1/2 border border-gray-200"
-          style={{ borderRadius: "10px", borderColor: themeColor }}
+          style={{ borderColor: themeColor, borderRadius: "10px" }}
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-gray-900">
               Personal Details
             </h2>
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-2">
               <button
-                className="bg-purple-500 text-white p-2 rounded-full"
-                onClick={() => setIsThemeModalOpen(true)}
+                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-all"
+                onClick={() =>
+                  handleThemeChange(
+                    colorOptions[
+                      Math.floor(Math.random() * colorOptions.length)
+                    ].value
+                  )
+                }
               >
-                <span className="text-lg">
-                  <i className="fa fa-paint-brush"></i>
-                </span>
+                <i className="fa fa-paint-brush text-lg"></i>
               </button>
-              <span className="text-sm text-purple-700">Theme</span>
+              <span className="text-sm text-gray-700">Theme</span>
             </div>
           </div>
           <p className="text-gray-600 mb-4">
@@ -160,7 +160,7 @@ const ResumeHome: React.FC = () => {
               onClick={handleSave}
               className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-all"
             >
-              Save
+              Save & Preview
             </button>
             <button
               onClick={handleNext}
@@ -170,58 +170,7 @@ const ResumeHome: React.FC = () => {
             </button>
           </div>
         </div>
-
-        {/* Right Panel - Resume Preview */}
-        <div
-          className="w-full lg:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200 mt-8 lg:mt-0"
-          style={{
-            borderRadius: "10px",
-            borderColor: themeColor,
-            borderTopWidth: "5px",
-            borderBottomWidth: "1px",
-          }}
-        >
-          <ResumePreview
-            personalDetails={personalDetails}
-            themeColor={themeColor}
-            resumeTitle={resumeTitle}
-            summary={""}
-            experience={[]}
-            fontSize={0}
-            fontColor={""}
-            education={[]}
-            skills={[]}
-          />
-        </div>
       </div>
-
-      {/* Theme Color Modal */}
-      {isThemeModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">
-              Select Theme Color
-            </h2>
-            <div className="grid grid-cols-3 gap-4">
-              {colorOptions.map((color) => (
-                <button
-                  key={color.value}
-                  onClick={() => handleThemeSelect(color.value)}
-                  className="w-12 h-12 rounded-full border-2 border-gray-300 hover:border-gray-500 focus:outline-none"
-                  style={{ backgroundColor: color.value }}
-                  aria-label={color.name}
-                />
-              ))}
-            </div>
-            <button
-              onClick={() => setIsThemeModalOpen(false)}
-              className="mt-4 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-all"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

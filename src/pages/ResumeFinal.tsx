@@ -1,14 +1,15 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PersonalDetails } from "../types";
 import htmlToPdfmake from "html-to-pdfmake";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import { v4 as uuidv4 } from "uuid";
 
 // Set the vfs using the pdfMake global object
 pdfMake.vfs = pdfFonts.vfs;
 
-// Register fonts instead of assigning to vfs directly
+// Register fonts
 pdfMake.fonts = {
   Roboto: {
     normal: "Roboto-Regular.ttf",
@@ -17,9 +18,6 @@ pdfMake.fonts = {
     bolditalics: "Roboto-MediumItalic.ttf",
   },
 };
-
-// Set the vfs using the pdfMake global object
-pdfMake.vfs = pdfFonts.vfs;
 
 interface Experience {
   positionTitle: string;
@@ -47,6 +45,7 @@ const ResumeFinal: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const resumeRef = useRef<HTMLDivElement>(null);
+  const [uniqueId, setUniqueId] = useState<string>("");
 
   const state = location.state as
     | {
@@ -106,13 +105,41 @@ const ResumeFinal: React.FC = () => {
       .filter((point) => point.trim().length > 0)
       .map((point) => point.trim() + ".");
 
+  // Generate or retrieve unique ID
+  React.useEffect(() => {
+    const savedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
+    if (!uniqueId) {
+      const newId = uuidv4();
+      setUniqueId(newId);
+      const newResume = {
+        id: newId,
+        title: resumeTitle || name || "Untitled Resume",
+        createdAt: new Date().toISOString(),
+      };
+      savedResumes.push(newResume);
+      localStorage.setItem("resumes", JSON.stringify(savedResumes));
+    }
+  }, [uniqueId, name, resumeTitle]);
+
   const saveResumeToLocalStorage = () => {
     const savedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
-    const newResume = {
-      title: resumeTitle || name || "Untitled Resume",
-      createdAt: new Date().toISOString(),
-    };
-    savedResumes.push(newResume);
+    const resumeIndex = savedResumes.findIndex(
+      (resume: { id: string }) => resume.id === uniqueId
+    );
+    if (resumeIndex === -1) {
+      const newResume = {
+        id: uniqueId,
+        title: resumeTitle || name || "Untitled Resume",
+        createdAt: new Date().toISOString(),
+      };
+      savedResumes.push(newResume);
+    } else {
+      savedResumes[resumeIndex] = {
+        ...savedResumes[resumeIndex],
+        title: resumeTitle || name || "Untitled Resume",
+        createdAt: new Date().toISOString(),
+      };
+    }
     localStorage.setItem("resumes", JSON.stringify(savedResumes));
   };
 
@@ -125,7 +152,10 @@ const ResumeFinal: React.FC = () => {
         content: pdfContent,
         defaultStyle: {
           font: "Roboto",
+          fontSize: 12,
         },
+        pageSize: { width: 595.28, height: 841.89 },
+        pageMargins: [40, 60, 40, 60] as [number, number, number, number], // [left, top, right, bottom] in points
       };
       pdfMake
         .createPdf(documentDefinition)
@@ -134,9 +164,16 @@ const ResumeFinal: React.FC = () => {
   };
 
   const handleShare = () => {
-    alert(
-      "Share functionality to be implemented. Copy the URL manually for now."
-    );
+    if (navigator.share) {
+      navigator
+        .share({
+          title: `${resumeTitle || name} Resume`,
+          text: `Check out my resume: ${window.location.origin}/resume/${uniqueId}`,
+          url: `${window.location.origin}/resume/${uniqueId}`,
+        })
+        .then(() => console.log("Successfully shared"))
+        .catch((error) => console.log("Error sharing:", error));
+    }
   };
 
   return (
@@ -174,10 +211,10 @@ const ResumeFinal: React.FC = () => {
         `}
       </style>
       <nav className="bg-white shadow-md w-full fixed top-0 z-10 no-print">
-        <div className=" flex justify-end max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8  items-center">
+        <div className="flex justify-center max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 items-center">
           <button
             onClick={() => navigate("/Dashboard")}
-            className=" text-gray-600 hover:text-blue-600 transition-colors text-sm sm:text-base"
+            className="text-gray-600 hover:text-blue-600 transition-colors text-sm sm:text-base mr-8"
           >
             <Link
               to="/"
@@ -225,21 +262,17 @@ const ResumeFinal: React.FC = () => {
               className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide"
               style={{ color: themeColor }}
             >
-              {resumeTitle || name}
-            </h1>
-            <h2
-              className="text-lg sm:text-xl md:text-2xl font-medium"
-              style={{ color: fontColor }}
-            >
               {jobTitle}
-            </h2>
+            </h1>
+
             <div
               className="flex flex-col gap-1 mt-2 text-xs sm:text-sm md:text-base"
               style={{ color: themeColor }}
             >
               <span>{address}</span>
-              <span>{phone}</span>
-              <span>{email}</span>
+              <span>
+                {email} | {phone}
+              </span>
             </div>
           </div>
 
