@@ -33,7 +33,7 @@ const ResumeSummary: React.FC = () => {
 
   const generateSummary = () => {
     if (!personalDetails.jobTitle) {
-      setError("Please provide a valid job title.");
+      setError("Please provide a valid job title in your personal details.");
       return;
     }
 
@@ -151,11 +151,11 @@ const ResumeSummary: React.FC = () => {
             <button
               onClick={generateSummary}
               className={`w-full py-3 rounded-lg flex items-center justify-center gap-3 text-white font-medium transition-all duration-300 ${
-                loading || !personalDetails.jobTitle || isSummaryEmpty
+                loading || isSummaryEmpty
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl"
               }`}
-              disabled={loading || !personalDetails.jobTitle || isSummaryEmpty}
+              disabled={loading || isSummaryEmpty}
             >
               {loading ? (
                 <span className="animate-pulse">Generating...</span>
