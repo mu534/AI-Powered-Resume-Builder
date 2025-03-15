@@ -67,14 +67,14 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="p-6 ml-20 mt-10  bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-extrabold ml-30  text-indigo-900 mb-8 ">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-4 sm:p-6 md:p-8">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-indigo-900 mb-6 sm:mb-8 text-center">
         Settings
       </h1>
-      <div className="bg-white p-6 rounded-xl shadow-lg max-w-md">
-        <h3 className="text-xl font-semibold mb-4">Preferences</h3>
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg w-full max-w-md">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">Preferences</h3>
         <form onSubmit={handleSubmit}>
-          <label className="block mb-2  font-medium">Language</label>
+          <label className="block mb-2 font-medium">Language</label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -85,10 +85,10 @@ const Settings: React.FC = () => {
             <option value="Arabic">Arabic</option>
             <option value="French">French</option>
           </select>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
+          {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
           <button
             type="submit"
-            className="mt-4 w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-all disabled:bg-gray-400"
+            className="mt-4 w-full bg-indigo-600 text-white py-2 sm:py-3 rounded-lg hover:bg-indigo-700 transition-all disabled:bg-gray-400"
             disabled={loading}
           >
             {loading ? "Saving..." : "Save Changes"}

@@ -28,6 +28,7 @@ const CoverLetterGen: React.FC = () => {
   });
 
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+  console.log("API Key in CoverLetterGen:", apiKey); // Debug log
   const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
   const generateLetter = async () => {
@@ -93,13 +94,12 @@ const CoverLetterGen: React.FC = () => {
 
   const fullLetter = `Dear ${form.recipient},\n${form.intro}\n\n${form.skills}\n\n${form.closing}\n\nSincerely,\n[Your Name]`;
 
-  // Function to trigger download
   const handleDownload = () => {
     const blob = new Blob([fullLetter], { type: "text/plain" });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `cover_letter_${form.jobTitle}_${form.company}.txt`; // Dynamic filename
+    link.download = `cover_letter_${form.jobTitle}_${form.company}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
