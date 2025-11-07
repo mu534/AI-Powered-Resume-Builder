@@ -1,54 +1,48 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## **AI-Powered Resume Builder**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```markdown
+# AI-Powered Resume Builder
 
-## Expanding the ESLint configuration
+A modern AI-based resume generator that transforms user input into professional resumes. Built with React, TypeScript, and Gemini API, this tool automates resume creation while maintaining a sleek design.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
+- Generate resumes based on user-provided details
+- AI-driven content enhancement
+- Export resumes as PDF
+- Responsive and intuitive UI
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Technologies
+- React
+- TypeScript
+- Tailwind CSS
+- Gemini API for AI content generation
+- Vite for development
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/mu534/AI-Powered-Resume-Builder.git
+Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+bash
+Copy code
+npm install
+Set your Gemini API key in .env:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+bash
+Copy code
+VITE_GEMINI_API_KEY=your_api_key
+Start the development server:
+
+bash
+Copy code
+npm run dev
+Usage
+Open http://localhost:5173
+
+Enter your personal and professional information
+
+Generate and download your AI-enhanced resume
