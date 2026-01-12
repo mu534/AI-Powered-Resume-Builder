@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export const generateResume = async (data: Record<string, unknown>) => {
   try {
-    const response = await axios.post(`${API_URL}/generate`, data);
+    const response = await axios.post(`${API_URL}/api/ai/generate`, data);
     return response.data;
   } catch (error) {
     console.error("Error generating resume:", error);

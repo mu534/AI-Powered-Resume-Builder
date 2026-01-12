@@ -26,3 +26,6 @@ dist-ssr
 *.sw?
 .env
 .vercel
+
+# Backend env (do not commit)
+backend/.env

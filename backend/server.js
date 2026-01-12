@@ -91,5 +91,9 @@ app.post("/signin", async (req, res) => {
 
 app.get("/test", (req, res) => res.send("Server is alive!"));
 
+// Mount AI routes
+import aiRoutes from "./routes/ai.js";
+app.use("/api/ai", aiRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
 import { PersonalDetails } from "../types";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateResume } from "../services/aiService";
 
 interface Experience {
   positionTitle: string;
@@ -63,8 +63,7 @@ const ResumeExperience: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-  const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+  // Use backend proxy; do not call provider directly from client.
 
   const addExperience = () => {
     setExperiences([
@@ -100,32 +99,25 @@ const ResumeExperience: React.FC = () => {
       setError("Please provide a valid job title.");
       return;
     }
-    if (!genAI) {
-      setError(
-        "API key is missing or invalid. Please check your configuration."
-      );
-      return;
-    }
+    // We call the server-side AI proxy; it will validate server-side API key.
 
     setLoading(true);
     setError(null);
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-      const result = await model.generateContent(
-        `Write a professional resume summary for a ${experiences[index].positionTitle} at ${experiences[index].companyName}. Keep it concise (2-3 sentences) and highlight skills, experience, and career goals relevant to this role.`
-      );
-      const aiResponse = result.response.text();
-      if (aiResponse) {
-        handleExperienceChange(index, "summary", aiResponse.trim());
+      const prompt = `Write a professional resume summary for a ${experiences[index].positionTitle} at ${experiences[index].companyName}. Keep it concise (2-3 sentences) and highlight skills, experience, and career goals relevant to this role.`;
+      const resp = await generateResume({ prompt, model: "gemini-1.5-pro" });
+      const aiText = resp?.text || "";
+      if (aiText) {
+        handleExperienceChange(index, "summary", aiText.trim());
       } else {
         throw new Error("AI response was empty or invalid.");
       }
-    } catch (error) {
-      console.error("Error generating AI summary with Gemini:", error);
+    } catch (err) {
+      console.error("Error generating AI summary:", err);
       setError(
-        error instanceof Error
-          ? error.message
+        err instanceof Error
+          ? err.message
           : "Failed to generate summary. Please try again later."
       );
     } finally {
