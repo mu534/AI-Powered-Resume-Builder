@@ -1,19 +1,12 @@
 // src/config/db.js
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-dotenv.config();
+// NOTE: Backend DB connector has been moved to /backend/config/db.js
+// This stub exists so frontend build pipeline doesn't try to bundle server-only
+// MongoDB code. Do NOT call this in the browser.
 
 const connectDB = async () => {
-  try {
-    await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb://localhost:27017/ai-resume"
-    );
-    console.log("MongoDB connected");
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
-    process.exit(1); // Exit process with failure
-  }
+  console.warn(
+    "connectDB is a server-side helper. Use backend/config/db.js on the server."
+  );
 };
 
 export default connectDB;

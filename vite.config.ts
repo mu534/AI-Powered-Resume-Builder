@@ -6,6 +6,12 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), visualizer({ open: true })],
+  server: {
+    watch: {
+      // Ignore backend folder to prevent frontend dev server from watching backend files
+      ignored: ["**/backend/**", "server.js", "config/**"],
+    },
+  },
   resolve: {
     alias: {
       react: path.resolve("./node_modules/react"),

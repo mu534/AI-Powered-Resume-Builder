@@ -42,8 +42,23 @@ const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
 };
 
 function App() {
+  // Prefer Vite-exposed variable for client id; fall back to process.env if available.
+  const googleClientId = String(
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ??
+      (typeof process !== "undefined"
+        ? process.env?.GOOGLE_CLIENT_ID
+        : undefined) ??
+      ""
+  );
+
+  if (!googleClientId) {
+    console.warn(
+      "Google OAuth client ID is not set. Set VITE_GOOGLE_CLIENT_ID in your .env for client usage."
+    );
+  }
+
   return (
-    <GoogleOAuthProvider clientId="598605355815-0fi7891f8fvr04ur6hcjuv7qrld1c5gp.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={googleClientId}>
       <Routes>
         <Route
           path="/"
