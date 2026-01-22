@@ -1,11 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import connectDB from "./config/db.js";
 
-dotenv.config();
+// Ensure we load the .env file located in the backend folder regardless of cwd.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 app.use(express.json());
@@ -91,9 +96,22 @@ app.post("/signin", async (req, res) => {
 
 app.get("/test", (req, res) => res.send("Server is alive!"));
 
-// Mount AI routes
-import aiRoutes from "./routes/ai.js";
-app.use("/api/ai", aiRoutes);
+// Mount AI routes after environment is loaded
+const aiModule = await import("./routes/ai.js");
+app.use("/api/ai", aiModule.default);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+const server = app.listen(PORT, () =>
+  console.log(`Backend running on port ${PORT}`)
+);
+
+server.on("error", (err) => {
+  if (err && err.code === "EADDRINUSE") {
+    console.error(
+      `Port ${PORT} is already in use. Kill the process using the port or set a different PORT environment variable and restart.`
+    );
+    process.exit(1);
+  }
+  console.error("Server error:", err);
+  process.exit(1);
+});

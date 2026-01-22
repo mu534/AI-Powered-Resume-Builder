@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
 import { PersonalDetails } from "../types";
 
@@ -8,46 +7,84 @@ const ResumeSummary: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { personalDetails, resumeTitle } = (location.state as {
-    personalDetails: PersonalDetails;
-    resumeTitle: string;
-  }) || {
-    personalDetails: {
-      firstName: "",
-      lastName: "",
-      jobTitle: "",
-      address: "",
-      phone: "",
-      email: "",
-    },
-    resumeTitle: "Untitled Resume",
-  };
+  const { personalDetails, resumeTitle } =
+    (location.state as {
+      personalDetails: PersonalDetails;
+      resumeTitle: string;
+    }) || {};
 
-  const [summary, setSummary] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [themeColor, setThemeColor] = useState<string>("#9333ea");
-  const [fontSize, setFontSize] = useState<number>(16);
-  const [fontColor, setFontColor] = useState<string>("#000000");
-  const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
+  const [summary, setSummary] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generateSummary = () => {
-    if (!personalDetails.jobTitle) {
-      setError("Please provide a valid job title in your personal details.");
+  const [themeColor, setThemeColor] = useState("#9333ea");
+  const [fontSize, setFontSize] = useState(16);
+  const [fontColor, setFontColor] = useState("#000000");
+
+  // -----------------------------
+  // AI SUMMARY GENERATION
+  // -----------------------------
+  const generateSummary = async () => {
+    if (!personalDetails?.jobTitle) {
+      setError("Job title is required to generate a summary.");
       return;
     }
 
     setLoading(true);
     setError(null);
 
-    const defaultSummary = `Experienced ${personalDetails.jobTitle} with a strong background in relevant skills and a proven track record of success. Eager to leverage expertise to contribute to innovative projects and achieve career goals in a dynamic environment.`;
+    try {
+      const prompt = `
+You are a professional resume writer.
 
-    setTimeout(() => {
-      setSummary(defaultSummary);
+Write a concise, impactful resume summary (3–4 sentences) for the following candidate:
+
+Name: ${personalDetails.firstName} ${personalDetails.lastName}
+Job Title: ${personalDetails.jobTitle}
+
+Focus on:
+- Professional tone
+- Skills & impact
+- ATS-friendly language
+- No emojis
+`;
+
+      const base = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${base}/api/ai/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        // Try to extract error message from server response for better feedback
+        let errText = `AI generation failed (status ${response.status})`;
+        try {
+          const errBody = await response.json();
+          if (errBody?.error) errText = String(errBody.error);
+          else if (errBody?.message) errText = String(errBody.message);
+        } catch (e) {
+          console.error("Error parsing error response:", e);
+          // ignore parse errors
+        }
+        throw new Error(errText);
+      }
+
+      const data = await response.json();
+      setSummary((data.text || "").trim());
+    } catch (err) {
+      console.error("AI summary error:", err);
+      setError("Failed to generate summary. Please try again.");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
+  // -----------------------------
+  // NAVIGATION
+  // -----------------------------
   const handleNext = () => {
     navigate("/resume-experience", {
       state: {
@@ -61,162 +98,108 @@ const ResumeSummary: React.FC = () => {
     });
   };
 
-  // Check if summary is empty or only whitespace
   const isSummaryEmpty = summary.trim() === "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
       {/* Navbar */}
-      <nav className="bg-white shadow-lg w-full fixed top-0 z-20 rounded-b-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-end items-center">
+      <nav className="bg-white shadow w-full fixed top-0 left-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-end">
           <Link
-            to="/Dashboard"
-            className="text-gray-700 hover:text-purple-600 transition-colors duration-300 font-medium"
+            to="/dashboard"
+            className="text-gray-700 hover:text-purple-600 font-medium"
           >
             Dashboard
           </Link>
         </div>
       </nav>
 
-      {/* Main Content */}
-      <div className="pt-24 pb-12 flex-1 w-full max-w-6xl flex flex-col md:flex-row gap-6 md:gap-10">
-        {/* Left Panel - Summary Form and Settings */}
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
-            Craft Your Summary
+      <div className="pt-24 max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+        {/* Left Panel */}
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold mb-2 text-purple-700">
+            Resume Summary
           </h2>
           <p className="text-gray-600 mb-6">
-            Create or generate a compelling summary for your job title.
+            Generate a professional summary using AI or edit it manually.
           </p>
+
           {error && (
-            <div className="mb-6 text-red-600 bg-red-50 p-3 rounded-lg shadow-sm">
+            <div className="mb-4 text-red-600 bg-red-50 p-3 rounded-lg">
               {error}
             </div>
           )}
 
-          {/* Customization Inputs */}
-          <div className="space-y-6">
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Font Size (px)
-              </label>
-              <input
-                type="number"
-                value={fontSize}
-                onChange={(e) =>
-                  setFontSize(
-                    Math.max(10, Math.min(36, Number(e.target.value)))
-                  )
-                }
-                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
-                min="10"
-                max="36"
-              />
-            </div>
+          {/* Controls */}
+          <div className="space-y-4">
+            <input
+              type="number"
+              min={10}
+              max={36}
+              value={fontSize}
+              onChange={(e) =>
+                setFontSize(Math.max(10, Math.min(36, Number(e.target.value))))
+              }
+              className="w-full p-3 border rounded-lg"
+              placeholder="Font size"
+            />
 
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Font Color
-              </label>
-              <input
-                type="color"
-                value={fontColor}
-                onChange={(e) => setFontColor(e.target.value)}
-                className="w-full h-12 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
-              />
-            </div>
+            <input
+              type="color"
+              value={fontColor}
+              onChange={(e) => setFontColor(e.target.value)}
+              className="w-full h-12 rounded-lg"
+            />
 
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Theme Color
-              </label>
-              <input
-                type="color"
-                value={themeColor}
-                onChange={(e) => setThemeColor(e.target.value)}
-                className="w-full h-12 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
-              />
-            </div>
+            <input
+              type="color"
+              value={themeColor}
+              onChange={(e) => setThemeColor(e.target.value)}
+              className="w-full h-12 rounded-lg"
+            />
 
-            {/* Summary Textarea */}
             <textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
-              placeholder="Write or generate your summary here..."
-              className="w-full p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent resize-none h-36 transition-all"
-              style={{ fontSize: `${fontSize}px`, color: fontColor }}
+              placeholder="Your professional summary..."
+              className="w-full h-40 p-4 border rounded-lg resize-none"
+              style={{ fontSize, color: fontColor }}
             />
 
-            {/* Generate Button */}
             <button
               onClick={generateSummary}
-              className={`w-full py-3 rounded-lg flex items-center justify-center gap-3 text-white font-medium transition-all duration-300 ${
-                loading || isSummaryEmpty
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl"
-              }`}
-              disabled={loading || isSummaryEmpty}
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium hover:opacity-90 transition"
             >
-              {loading ? (
-                <span className="animate-pulse">Generating...</span>
-              ) : (
-                <>
-                  <span className="text-xl">✨</span> Generate Summary
-                </>
-              )}
+              {loading ? "Generating..." : " Generate with AI"}
             </button>
 
-            {/* Next Button */}
             <button
               onClick={handleNext}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
+              disabled={isSummaryEmpty}
+              className="w-full py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
             >
               Next Step
             </button>
           </div>
         </div>
 
-        {/* Right Panel - Resume Preview */}
-        <div className="w-full bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            Live Preview
-          </h3>
+        {/* Preview */}
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h3 className="text-xl font-semibold mb-4">Live Preview</h3>
           <ResumePreview
             personalDetails={personalDetails}
-            themeColor={themeColor}
-            summary={summary}
             resumeTitle={resumeTitle}
-            experience={[]}
+            summary={summary}
+            themeColor={themeColor}
             fontSize={fontSize}
             fontColor={fontColor}
+            experience={[]}
             education={[]}
             skills={[]}
           />
         </div>
       </div>
-
-      {/* Theme Modal */}
-      {isThemeModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Select Theme Color
-            </h3>
-            <input
-              type="color"
-              value={themeColor}
-              onChange={(e) => setThemeColor(e.target.value)}
-              className="w-full h-12 rounded-lg border border-gray-200 cursor-pointer mb-4"
-            />
-            <button
-              onClick={() => setIsThemeModalOpen(false)}
-              className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
