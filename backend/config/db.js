@@ -13,7 +13,11 @@ const connectDB = async () => {
     console.log("✅ MongoDB connected");
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
-    process.exit(1);
+    // During local development we don't want the whole server to exit
+    // because of a DB connection issue — allow the server to run so
+    // we can debug CORS / API endpoints. In production you may want
+    // to exit or implement a retry/backoff here.
+    return;
   }
 };
 
