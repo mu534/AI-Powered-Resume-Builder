@@ -1,50 +1,77 @@
 import { Link } from "react-router-dom";
 import CoverLetterGen from "../components/CoverLetterGen";
 import Footer from "../components/Footer";
-import AboutResumeAI from "../components/AboutResumeAI.tsx"; // Import the new component
+import AboutResumeAI from "../components/AboutResumeAI";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-lg fixed w-full z-10 top-0  pr-10">
-        <div className="max-w-6xl  mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-end ">
-          <Link to="/ResumeRoot">
-            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105">
-              Go to Resume Editor
-            </button>
-          </Link>
-        </div>
-      </nav>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--color-bg)" }}
+    >
+      <a className="sr-only" href="#main-content">
+        Skip to main content
+      </a>
 
-      {/* Main Content */}
-      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 min-h-screen">
-        <div className="max-w-6xl mx-auto space-y-12">
-          {/* Heading */}
-          <div className="text-center">
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 tracking-tight">
-              Welcome to{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                ResumeAI
-              </span>
-            </h1>
-            <p className="mt-4 text-xl text-gray-600">
-              Craft Your Perfect Resume with AI Precision
+      <header
+        className="fixed w-full z-20"
+        role="banner"
+        style={{ background: "transparent" }}
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-lg font-bold text-gray-900">ResumeAI</div>
+            <p className="text-sm text-muted-foreground">
+              Build professional resumes faster
             </p>
           </div>
 
-          {/* About ResumeAI Section */}
-          <AboutResumeAI />
+          <nav aria-label="Primary">
+            <Link to="/ResumeRoot" aria-label="Open resume editor">
+              <button
+                className="inline-flex items-center gap-2 py-2 px-4 rounded-lg text-white font-semibold"
+                style={{
+                  background:
+                    "linear-gradient(90deg,var(--color-primary), var(--color-primary-600))",
+                  boxShadow: "0 6px 18px rgba(15,118,110,0.15)",
+                }}
+              >
+                Resume Editor
+              </button>
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-          {/* Cover Letter Generator */}
-          <div className="rounded-2xl shadow-lg bg-white p-6">
+      <main id="main-content" className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto space-y-10">
+          <section className="text-center">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+              Welcome to{" "}
+              <span style={{ color: "var(--color-primary)" }}>ResumeAI</span>
+            </h1>
+            <p className="mt-3 text-lg text-gray-600">
+              Craft ATS-friendly resumes and cover letters with AI guidance.
+            </p>
+          </section>
+
+          <section aria-labelledby="about-heading">
+            <AboutResumeAI />
+          </section>
+
+          <section aria-labelledby="cover-heading" className="surface p-6">
+            <h2
+              id="cover-heading"
+              className="text-xl font-semibold text-gray-900 mb-4"
+            >
+              AI Cover Letter Generator
+            </h2>
             <CoverLetterGen />
-          </div>
+          </section>
 
-          {/* Footer */}
           <Footer />
         </div>
-      </div>
+      </main>
     </div>
   );
 };

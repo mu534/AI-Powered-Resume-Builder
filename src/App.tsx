@@ -14,6 +14,7 @@ import ResumeFinal from "./pages/ResumeFinal";
 import ResumeSkills from "./pages/ResumeSkills";
 import Profile from "./pages/Profile";
 import { useAppContext } from "./AppContext";
+import ThemeProvider from "./Shared/ThemeProvider";
 
 const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -25,7 +26,7 @@ const CareerLayout: React.FC<{ children: React.ReactNode }> = ({
     "CareerLayout: Context accessed at:",
     new Date().toISOString(),
     "isAuthenticated:",
-    isAuthenticated
+    isAuthenticated,
   );
 
   const handleLogout = () => {
@@ -48,99 +49,101 @@ function App() {
       (typeof process !== "undefined"
         ? process.env?.GOOGLE_CLIENT_ID
         : undefined) ??
-      ""
+      "",
   );
 
   if (!googleClientId) {
     console.warn(
-      "Google OAuth client ID is not set. Set VITE_GOOGLE_CLIENT_ID in your .env for client usage."
+      "Google OAuth client ID is not set. Set VITE_GOOGLE_CLIENT_ID in your .env for client usage.",
     );
   }
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <CareerLayout>
-              <Dashboard />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/ResumeRoot"
-          element={
-            <CareerLayout>
-              <ResumeRoot />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/ResumeHome"
-          element={
-            <CareerLayout>
-              <ResumeHome />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-summary"
-          element={
-            <CareerLayout>
-              <ResumeSummary />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-experience"
-          element={
-            <CareerLayout>
-              <ResumeExperience />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-education"
-          element={
-            <CareerLayout>
-              <ResumeEducation />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-skills"
-          element={
-            <CareerLayout>
-              <ResumeSkills />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/resume-final"
-          element={
-            <CareerLayout>
-              <ResumeFinal />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <CareerLayout>
-              <Profile />
-            </CareerLayout>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <CareerLayout>
-              <Settings />
-            </CareerLayout>
-          }
-        />
-      </Routes>
+      <ThemeProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <CareerLayout>
+                <Dashboard />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/ResumeRoot"
+            element={
+              <CareerLayout>
+                <ResumeRoot />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/ResumeHome"
+            element={
+              <CareerLayout>
+                <ResumeHome />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-summary"
+            element={
+              <CareerLayout>
+                <ResumeSummary />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-experience"
+            element={
+              <CareerLayout>
+                <ResumeExperience />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-education"
+            element={
+              <CareerLayout>
+                <ResumeEducation />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-skills"
+            element={
+              <CareerLayout>
+                <ResumeSkills />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/resume-final"
+            element={
+              <CareerLayout>
+                <ResumeFinal />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <CareerLayout>
+                <Profile />
+              </CareerLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <CareerLayout>
+                <Settings />
+              </CareerLayout>
+            }
+          />
+        </Routes>
+      </ThemeProvider>
     </GoogleOAuthProvider>
   );
 }

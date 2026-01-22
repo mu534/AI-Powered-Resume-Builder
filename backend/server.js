@@ -47,7 +47,7 @@ app.put("/api/language", async (req, res) => {
     const user = await User.findOneAndUpdate(
       {},
       { language },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
     res.json({ language: user.language });
   } catch (err) {
@@ -85,7 +85,7 @@ app.post("/signin", async (req, res) => {
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || "secret",
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
     res.json({ token });
   } catch (err) {
@@ -100,15 +100,23 @@ app.get("/test", (req, res) => res.send("Server is alive!"));
 const aiModule = await import("./routes/ai.js");
 app.use("/api/ai", aiModule.default);
 
+// Client-side logs endpoint (best-effort)
+try {
+  const logs = await import("./routes/logs.js");
+  app.use("/api/logs", logs.default);
+} catch (e) {
+  console.warn("Logs route not available:", e?.message || e);
+}
+
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () =>
-  console.log(`Backend running on port ${PORT}`)
+  console.log(`Backend running on port ${PORT}`),
 );
 
 server.on("error", (err) => {
   if (err && err.code === "EADDRINUSE") {
     console.error(
-      `Port ${PORT} is already in use. Kill the process using the port or set a different PORT environment variable and restart.`
+      `Port ${PORT} is already in use. Kill the process using the port or set a different PORT environment variable and restart.`,
     );
     process.exit(1);
   }

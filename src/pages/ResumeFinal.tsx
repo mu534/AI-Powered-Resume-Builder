@@ -5,6 +5,8 @@ import htmlToPdfmake from "html-to-pdfmake";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { v4 as uuidv4 } from "uuid";
+import Card from "../Shared/components/Card";
+import Button from "../Shared/components/Button";
 
 // Set the vfs using the pdfMake global object
 pdfMake.vfs = pdfFonts.vfs;
@@ -124,7 +126,7 @@ const ResumeFinal: React.FC = () => {
   const saveResumeToLocalStorage = () => {
     const savedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
     const resumeIndex = savedResumes.findIndex(
-      (resume: { id: string }) => resume.id === uniqueId
+      (resume: { id: string }) => resume.id === uniqueId,
     );
     if (resumeIndex === -1) {
       const newResume = {
@@ -238,156 +240,158 @@ const ResumeFinal: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
-          <button
-            onClick={handleDownload}
-            className="bg-purple-600 text-white px-4 sm:px-5 py-2 sm:py-3 rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
-          >
-            Download
-          </button>
-          <button
-            onClick={handleShare}
-            className="bg-purple-600 text-white px-4 sm:px-5 py-2 sm:py-3 rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
-          >
+          <Button onClick={handleDownload}>Download</Button>
+          <Button variant="secondary" onClick={handleShare}>
             Share
-          </button>
+          </Button>
         </div>
 
-        <div
-          ref={resumeRef}
-          className="bg-white rounded-lg shadow-lg max-w-sm sm:max-w-md md:max-w-lg lg:max-w-3xl w-full p-4 sm:p-6 md:p-8 font-sans text-sm overflow-auto resume-content"
-          style={{ borderTop: `6px solid ${themeColor}` }}
-        >
-          <div className="mb-6 sm:mb-8 text-center">
-            <h1
-              className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide"
-              style={{ color: themeColor }}
-            >
-              {jobTitle}
-            </h1>
+        <Card className="w-full resume-content" ref={undefined as any}>
+          <div ref={resumeRef} style={{ borderTop: `6px solid ${themeColor}` }}>
+            <div className="mb-6 sm:mb-8 text-center">
+              <h1
+                className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide"
+                style={{ color: themeColor }}
+              >
+                {jobTitle}
+              </h1>
 
-            <div
-              className="flex flex-col gap-1 mt-2 text-xs sm:text-sm md:text-base"
-              style={{ color: themeColor }}
-            >
-              <span>{address}</span>
-              <span>
-                {email} | {phone}
-              </span>
+              <div
+                className="flex flex-col gap-1 mt-2 text-xs sm:text-sm md:text-base"
+                style={{ color: themeColor }}
+              >
+                <span>{address}</span>
+                <span>
+                  {email} | {phone}
+                </span>
+              </div>
             </div>
+
+            {summaryPoints.length > 0 && (
+              <section className="mb-6 sm:mb-8">
+                <h3
+                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
+                  style={{ color: themeColor, borderColor: themeColor }}
+                >
+                  Professional Summary
+                </h3>
+                <ul
+                  className="list-disc list-inside space-y-1"
+                  style={{ color: fontColor, fontSize: `${fontSize}px` }}
+                >
+                  {summaryPoints.map((point, index) => (
+                    <li key={index} className="text-sm sm:text-base md:text-lg">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {experiences.length > 0 && (
+              <section className="mb-6 sm:mb-8">
+                <h3
+                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
+                  style={{ color: themeColor, borderColor: themeColor }}
+                >
+                  Professional Experience
+                </h3>
+                {experiences.map((exp, index) => (
+                  <div key={index} className="mb-4">
+                    <h4
+                      className="font-medium text-lg sm:text-xl md:text-2xl"
+                      style={{ color: fontColor, fontSize: `${fontSize}px` }}
+                    >
+                      {exp.positionTitle}
+                    </h4>
+                    <p
+                      className="text-xs sm:text-sm md:text-base italic"
+                      style={{
+                        color: themeColor,
+                        fontSize: `${fontSize - 2}px`,
+                      }}
+                    >
+                      {exp.companyName}, {exp.startDate} - {exp.endDate}
+                    </p>
+                    <ul
+                      className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm md:text-base"
+                      style={{
+                        color: fontColor,
+                        fontSize: `${fontSize - 2}px`,
+                      }}
+                    >
+                      {getExperiencePoints(exp.summary).map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </section>
+            )}
+
+            {educations.length > 0 && (
+              <section className="mb-6 sm:mb-8">
+                <h3
+                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
+                  style={{ color: themeColor, borderColor: themeColor }}
+                >
+                  Education
+                </h3>
+                {educations.map((edu, index) => (
+                  <div key={index} className="mb-4">
+                    <h4
+                      className="font-medium text-lg sm:text-xl md:text-2xl"
+                      style={{ color: fontColor, fontSize: `${fontSize}px` }}
+                    >
+                      {edu.degree} in {edu.major}
+                    </h4>
+                    <p
+                      className="text-xs sm:text-sm md:text-base italic"
+                      style={{
+                        color: themeColor,
+                        fontSize: `${fontSize - 2}px`,
+                      }}
+                    >
+                      {edu.universityName}, {edu.startDate} - {edu.endDate}
+                    </p>
+                    <ul
+                      className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm md:text-base"
+                      style={{
+                        color: fontColor,
+                        fontSize: `${fontSize - 2}px`,
+                      }}
+                    >
+                      {getEducationPoints(edu.description).map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </section>
+            )}
+
+            {skills.length > 0 && (
+              <section className="mb-6 sm:mb-8">
+                <h3
+                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
+                  style={{ color: themeColor, borderColor: themeColor }}
+                >
+                  Key Skills
+                </h3>
+                <ul
+                  className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base"
+                  style={{ color: fontColor, fontSize: `${fontSize - 2}px` }}
+                >
+                  {skills.map((skill, index) => (
+                    <li key={index} className="text-sm sm:text-base md:text-lg">
+                      {skill.name} - {skill.level}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
-
-          {summaryPoints.length > 0 && (
-            <section className="mb-6 sm:mb-8">
-              <h3
-                className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                style={{ color: themeColor, borderColor: themeColor }}
-              >
-                Professional Summary
-              </h3>
-              <ul
-                className="list-disc list-inside space-y-1"
-                style={{ color: fontColor, fontSize: `${fontSize}px` }}
-              >
-                {summaryPoints.map((point, index) => (
-                  <li key={index} className="text-sm sm:text-base md:text-lg">
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {experiences.length > 0 && (
-            <section className="mb-6 sm:mb-8">
-              <h3
-                className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                style={{ color: themeColor, borderColor: themeColor }}
-              >
-                Professional Experience
-              </h3>
-              {experiences.map((exp, index) => (
-                <div key={index} className="mb-4">
-                  <h4
-                    className="font-medium text-lg sm:text-xl md:text-2xl"
-                    style={{ color: fontColor, fontSize: `${fontSize}px` }}
-                  >
-                    {exp.positionTitle}
-                  </h4>
-                  <p
-                    className="text-xs sm:text-sm md:text-base italic"
-                    style={{ color: themeColor, fontSize: `${fontSize - 2}px` }}
-                  >
-                    {exp.companyName}, {exp.startDate} - {exp.endDate}
-                  </p>
-                  <ul
-                    className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm md:text-base"
-                    style={{ color: fontColor, fontSize: `${fontSize - 2}px` }}
-                  >
-                    {getExperiencePoints(exp.summary).map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </section>
-          )}
-
-          {educations.length > 0 && (
-            <section className="mb-6 sm:mb-8">
-              <h3
-                className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                style={{ color: themeColor, borderColor: themeColor }}
-              >
-                Education
-              </h3>
-              {educations.map((edu, index) => (
-                <div key={index} className="mb-4">
-                  <h4
-                    className="font-medium text-lg sm:text-xl md:text-2xl"
-                    style={{ color: fontColor, fontSize: `${fontSize}px` }}
-                  >
-                    {edu.degree} in {edu.major}
-                  </h4>
-                  <p
-                    className="text-xs sm:text-sm md:text-base italic"
-                    style={{ color: themeColor, fontSize: `${fontSize - 2}px` }}
-                  >
-                    {edu.universityName}, {edu.startDate} - {edu.endDate}
-                  </p>
-                  <ul
-                    className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm md:text-base"
-                    style={{ color: fontColor, fontSize: `${fontSize - 2}px` }}
-                  >
-                    {getEducationPoints(edu.description).map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </section>
-          )}
-
-          {skills.length > 0 && (
-            <section className="mb-6 sm:mb-8">
-              <h3
-                className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                style={{ color: themeColor, borderColor: themeColor }}
-              >
-                Key Skills
-              </h3>
-              <ul
-                className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base"
-                style={{ color: fontColor, fontSize: `${fontSize - 2}px` }}
-              >
-                {skills.map((skill, index) => (
-                  <li key={index} className="text-sm sm:text-base md:text-lg">
-                    {skill.name} - {skill.level}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </div>
+        </Card>
       </div>
     </div>
   );

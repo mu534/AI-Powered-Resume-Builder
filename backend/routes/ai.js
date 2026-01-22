@@ -21,15 +21,39 @@ const client = groqKey
 
 router.post("/generate", async (req, res) => {
   if (!client) {
-    return res.status(500).json({
-      error: "AI provider not configured on server.",
-    });
+    return res
+      .status(503)
+      .json({
+        error: {
+          code: "AI_NOT_CONFIGURED",
+          message: "AI provider not configured on server.",
+        },
+      });
   }
 
-  const { prompt } = req.body;
+  let { prompt } = req.body || {};
+  if (typeof prompt !== "string") {
+    return res
+      .status(400)
+      .json({
+        error: { code: "INVALID_INPUT", message: "Invalid or missing prompt." },
+      });
+  }
 
+  prompt = prompt.trim();
   if (!prompt) {
-    return res.status(400).json({ error: "Missing prompt" });
+    return res
+      .status(400)
+      .json({
+        error: { code: "INVALID_INPUT", message: "Prompt cannot be empty." },
+      });
+  }
+
+  // Limit prompt size for safety
+  if (prompt.length > 5000) {
+    return res
+      .status(413)
+      .json({ error: { code: "TOO_LARGE", message: "Prompt is too long." } });
   }
 
   try {
@@ -41,22 +65,23 @@ router.post("/generate", async (req, res) => {
           content:
             "You are a professional resume-writing AI that generates clear, concise, ATS-friendly resumes.",
         },
-        {
-          role: "user",
-          content: prompt,
-        },
+        { role: "user", content: prompt },
       ],
       temperature: 0.4,
     });
 
-    res.json({
-      text: completion.choices[0].message.content,
-    });
+    const text = completion?.choices?.[0]?.message?.content || "";
+    res.json({ text });
   } catch (err) {
     console.error("AI generate error:", err);
-    res.status(500).json({
-      error: err?.message || "AI generation failed",
-    });
+    res
+      .status(500)
+      .json({
+        error: {
+          code: "AI_ERROR",
+          message: err?.message || "AI generation failed",
+        },
+      });
   }
 });
 

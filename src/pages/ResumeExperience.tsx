@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
+import Button from "../Shared/components/Button";
+import Card from "../Shared/components/Card";
 import { PersonalDetails } from "../types";
 import { generateResume } from "../services/aiService";
 
@@ -62,6 +64,7 @@ const ResumeExperience: React.FC = () => {
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isValid, setIsValid] = useState(false);
 
   // Use backend proxy; do not call provider directly from client.
 
@@ -87,12 +90,20 @@ const ResumeExperience: React.FC = () => {
   const handleExperienceChange = (
     index: number,
     field: keyof Experience,
-    value: string
+    value: string,
   ) => {
     const updatedExperiences = [...experiences];
     updatedExperiences[index][field] = value;
     setExperiences(updatedExperiences);
   };
+
+  // Simple validation: all entries must have positionTitle and companyName
+  React.useEffect(() => {
+    const ok = experiences.every(
+      (e) => e.positionTitle.trim() && e.companyName.trim(),
+    );
+    setIsValid(ok);
+  }, [experiences]);
 
   const generateExperienceSummary = async (index: number) => {
     if (!experiences[index].positionTitle) {
@@ -118,7 +129,7 @@ const ResumeExperience: React.FC = () => {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to generate summary. Please try again later."
+          : "Failed to generate summary. Please try again later.",
       );
     } finally {
       setLoading(false);
@@ -169,8 +180,7 @@ const ResumeExperience: React.FC = () => {
       {/* Main Content */}
       <div className="pt-20 pb-12 px-4 flex-1 flex flex-col items-center justify-center w-full max-w-6xl">
         <div className="flex flex-col md:flex-row gap-8 w-full">
-          {/* Left Panel - Experience Form */}
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2 border border-gray-200">
+          <Card className="w-full md:w-1/2">
             <h2 className="text-xl font-bold text-gray-900 mb-2">
               Professional Experience
             </h2>
@@ -178,20 +188,20 @@ const ResumeExperience: React.FC = () => {
               Add your previous job experiences to showcase your expertise.
             </p>
             {error && (
-              <div className="mb-4 text-red-500 bg-red-100 p-2 rounded-lg">
+              <div className="mb-4 text-red-600 bg-red-50 p-2 rounded-md">
                 {error}
               </div>
             )}
 
-            <div className="space-y-8">
+            <div className="space-y-6">
               {experiences.map((exp, index) => (
                 <div
                   key={index}
-                  className="p-6 border border-gray-200 rounded-xl shadow-sm"
+                  className="p-4 border border-gray-100 rounded-md shadow-sm"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Position Title
                       </label>
                       <input
@@ -201,15 +211,15 @@ const ResumeExperience: React.FC = () => {
                           handleExperienceChange(
                             index,
                             "positionTitle",
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500"
                         placeholder="e.g., Software Engineer"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Company Name
                       </label>
                       <input
@@ -219,43 +229,47 @@ const ResumeExperience: React.FC = () => {
                           handleExperienceChange(
                             index,
                             "companyName",
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500"
                         placeholder="e.g., Tech Corp"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-gray-700 mb-2">City</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        City
+                      </label>
                       <input
                         type="text"
                         value={exp.city}
                         onChange={(e) =>
                           handleExperienceChange(index, "city", e.target.value)
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500"
                         placeholder="e.g., San Francisco"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-2">State</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        State
+                      </label>
                       <input
                         type="text"
                         value={exp.state}
                         onChange={(e) =>
                           handleExperienceChange(index, "state", e.target.value)
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500"
                         placeholder="e.g., CA"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Start Date
                       </label>
                       <input
@@ -265,14 +279,14 @@ const ResumeExperience: React.FC = () => {
                           handleExperienceChange(
                             index,
                             "startDate",
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         End Date
                       </label>
                       <input
@@ -282,76 +296,74 @@ const ResumeExperience: React.FC = () => {
                           handleExperienceChange(
                             index,
                             "endDate",
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500"
                       />
                     </div>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 mb-2">Summary</label>
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Summary
+                    </label>
                     <textarea
                       value={exp.summary}
                       onChange={(e) =>
                         handleExperienceChange(index, "summary", e.target.value)
                       }
                       placeholder="Describe your role and achievements..."
-                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 resize-none h-36"
+                      className="w-full p-3 border border-gray-200 rounded-md resize-none h-28"
                       style={{ fontSize: `${fontSize}px`, color: fontColor }}
                     />
-                    <button
-                      onClick={() => generateExperienceSummary(index)}
-                      className={`w-full mt-3 py-3 rounded-lg flex items-center justify-center gap-3 text-white font-medium transition-all duration-300 ${
-                        loading || !exp.positionTitle
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl"
-                      }`}
-                      disabled={loading || !exp.positionTitle}
-                    >
-                      {loading ? (
-                        <span className="animate-pulse">Generating...</span>
-                      ) : (
-                        <>
-                          <span className="text-xl">✨</span> Generate with AI
-                        </>
+                    <div className="mt-3 flex gap-2">
+                      <Button
+                        onClick={() => generateExperienceSummary(index)}
+                        disabled={loading || !exp.positionTitle}
+                        className="flex-1"
+                      >
+                        {loading ? "Generating…" : "Generate with AI"}
+                      </Button>
+                      {experiences.length > 1 && (
+                        <Button
+                          variant="ghost"
+                          onClick={() => removeExperience(index)}
+                          className="text-red-600"
+                        >
+                          Remove
+                        </Button>
                       )}
-                    </button>
+                    </div>
                   </div>
-                  {experiences.length > 1 && (
-                    <button
-                      onClick={() => removeExperience(index)}
-                      className="text-red-600 hover:text-red-800 font-medium transition-colors"
-                    >
-                      - Remove Experience
-                    </button>
-                  )}
                 </div>
               ))}
-              <button
-                onClick={addExperience}
-                className="mt-4 text-purple-600 hover:text-purple-800 font-medium transition-colors"
-              >
-                + Add More Experience
-              </button>
+              <div className="pt-2">
+                <button
+                  onClick={addExperience}
+                  className="text-indigo-600 hover:text-indigo-800"
+                >
+                  + Add More Experience
+                </button>
+              </div>
             </div>
 
-            {/* Navigation Buttons */}
             <div className="mt-6 flex flex-col gap-3">
-              <button
+              <Button
                 onClick={handleNext}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
+                disabled={!isValid}
+                className="w-full"
               >
                 Next Step
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={handleBack}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 shadow-md hover:shadow-lg transition-all duration-300 font-medium"
+                className="w-full"
               >
                 Back
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
 
           {/* Right Panel - Resume Preview */}
           <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
