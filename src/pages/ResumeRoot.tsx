@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SavedResumeCard from "./SavedResumeCard";
 import { Resume } from "../types"; // Import Resume type
@@ -7,6 +7,7 @@ import { useAppContext } from "../AppContext";
 const ResumeRoot: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newResumeTitle, setNewResumeTitle] = useState("");
+  const [query, setQuery] = useState("");
   const [savedResumes, setSavedResumes] = useState<Resume[]>([]);
   const navigate = useNavigate();
 
@@ -18,15 +19,64 @@ const ResumeRoot: React.FC = () => {
     setSavedResumes(resumes);
   }, []);
 
+  useEffect(() => {
+    // keep local state in sync when resumes are changed elsewhere
+    const onStorage = () => {
+      const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
+      setSavedResumes(resumes);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return savedResumes;
+    return savedResumes.filter((r) =>
+      r.name.toLowerCase().includes(query.trim().toLowerCase()),
+    );
+  }, [savedResumes, query]);
+
   const handleCreateResume = () => {
     if (newResumeTitle.trim()) {
       console.log("Creating resume with title:", newResumeTitle);
+      // create a basic resume object and persist
+      const resume: Resume = {
+        name: newResumeTitle,
+        createdAt: Date.now(),
+        content: {
+          personal: {
+            firstName: "",
+            lastName: "",
+            jobTitle: "",
+            address: "",
+            phone: "",
+            email: "",
+            summary: "",
+          },
+          experience: [],
+          education: [],
+          skills: [],
+        },
+      };
+      const next = [resume, ...savedResumes];
+      localStorage.setItem("resumes", JSON.stringify(next));
+      setSavedResumes(next);
       navigate(`/ResumeHome?title=${encodeURIComponent(newResumeTitle)}`);
       setIsModalOpen(false);
       setNewResumeTitle("");
     } else {
       console.log("Resume title is empty or invalid");
     }
+  };
+
+  const handleDelete = (index: number) => {
+    const next = savedResumes.filter((_, i) => i !== index);
+    localStorage.setItem("resumes", JSON.stringify(next));
+    setSavedResumes(next);
+  };
+
+  const handleEdit = (title: string) => {
+    navigate(`/ResumeHome?title=${encodeURIComponent(title)}`);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,40 +105,106 @@ const ResumeRoot: React.FC = () => {
         </div>
       </nav>
 
-      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-center justify-center">
-        <div className="max-w-4xl w-full space-y-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-            My Resume
-          </h1>
-          <p className="text-xl text-gray-600">
-            Start Creating AI Resume to your next job role
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div
-              onClick={() => setIsModalOpen(true)}
-              className="bg-gray-100 p-6 rounded-3xl shadow-md cursor-pointer flex flex-col items-center justify-center h-64 hover:bg-gray-200 transition-all"
-            >
-              <span className="text-4xl text-gray-500 mb-4">+</span>
-              <p className="text-lg font-medium text-gray-700">
-                Start Creating
+      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-start justify-center w-full">
+        <div className="max-w-7xl w-full">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-extrabold text-gray-900">
+                My Resumes
+              </h1>
+              <p className="text-sm text-gray-500">
+                Manage and create resumes quickly
               </p>
             </div>
 
-            {savedResumes.map((resume, index) => (
-              <SavedResumeCard
-                key={index}
-                title={resume.name}
-                createdAt={resume.createdAt}
-                index={index + 1}
-                content={resume.content} // Ensure content is passed correctly
+            <div className="flex items-center gap-3">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search resumes..."
+                className="px-3 py-2 border border-gray-200 rounded-md shadow-sm w-64"
+                aria-label="Search resumes"
               />
-            ))}
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg shadow hover:opacity-95"
+              >
+                + New Resume
+              </button>
+              <label className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md cursor-pointer bg-white">
+                <input
+                  type="file"
+                  accept="application/json"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      try {
+                        const obj = JSON.parse(String(reader.result));
+                        const next = [obj, ...savedResumes];
+                        localStorage.setItem("resumes", JSON.stringify(next));
+                        setSavedResumes(next);
+                      } catch (err) {
+                        console.error("Import failed", err);
+                      }
+                    };
+                    reader.readAsText(file);
+                  }}
+                />
+                Import
+              </label>
+            </div>
           </div>
 
-          <p className="text-gray-500 text-sm">
-            Select a resume or job role to begin your journey with ResumeAI.
-          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* New card */}
+            <div
+              onClick={() => setIsModalOpen(true)}
+              className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center h-56 cursor-pointer hover:bg-gray-50 transition"
+            >
+              <div className="text-4xl text-gray-400 mb-2">+</div>
+              <div className="text-lg font-semibold">Create a new resume</div>
+              <div className="text-sm text-gray-500 mt-1">
+                Start from scratch or use a template
+              </div>
+            </div>
+
+            {filtered.length === 0 && savedResumes.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">
+                  No resumes yet — create one to get started.
+                </p>
+              </div>
+            )}
+
+            {filtered.map((resume, idx) => (
+              <div key={idx} className="relative">
+                <SavedResumeCard
+                  title={resume.name}
+                  createdAt={resume.createdAt}
+                  index={idx + 1}
+                  content={resume.content}
+                />
+                <div className="absolute top-3 right-3 flex gap-2">
+                  <button
+                    onClick={() => handleEdit(resume.name)}
+                    className="bg-white p-2 rounded-full shadow hover:bg-gray-100"
+                    aria-label={`Edit ${resume.name}`}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(idx)}
+                    className="bg-red-500 text-white p-2 rounded-full shadow hover:opacity-90"
+                    aria-label={`Delete ${resume.name}`}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

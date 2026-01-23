@@ -8,7 +8,8 @@ const connectDB = async () => {
     const uri =
       process.env.MONGO_URI ||
       process.env.MONGODB_URI ||
-      "mongodb://localhost:27017/ai-resume";
+      // Use 127.0.0.1 to avoid IPv6 (::1) resolution issues on some Windows setups
+      "mongodb://127.0.0.1:27017/ai-resume";
     await mongoose.connect(uri);
     console.log("✅ MongoDB connected");
   } catch (error) {
