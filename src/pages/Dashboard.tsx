@@ -1,78 +1,56 @@
-import { Link } from "react-router-dom";
 import CoverLetterGen from "../components/CoverLetterGen";
 import Footer from "../components/Footer";
 import AboutResumeAI from "../components/AboutResumeAI";
+import DashboardHeader from "../components/DashboardHeader";
+import DashboardLayout from "../components/DashboardLayout";
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--color-bg)" }}
-    >
-      <a className="sr-only" href="#main-content">
-        Skip to main content
-      </a>
+    <>
+      <DashboardHeader />
 
-      <header
-        className="fixed w-full z-20"
-        role="banner"
-        style={{ background: "transparent" }}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-lg font-bold text-gray-900">ResumeAI</div>
-            <p className="text-sm text-muted-foreground">
-              Build professional resumes faster
+      <DashboardLayout>
+        {/* HERO */}
+        <section className="text-center space-y-6">
+          <span className="inline-block px-4 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-600">
+            AI Career Toolkit
+          </span>
+
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight">
+            Build job-winning resumes with{" "}
+            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              ResumeAI
+            </span>
+          </h1>
+
+          <p className="max-w-2xl mx-auto text-lg text-gray-600">
+            Create ATS-friendly resumes and professional cover letters in
+            minutes using powerful AI guidance.
+          </p>
+        </section>
+
+        {/* ABOUT */}
+        <section>
+          <AboutResumeAI />
+        </section>
+
+        {/* COVER LETTER TOOL */}
+        <section className="rounded-3xl bg-white/80 backdrop-blur-xl border border-gray-200 shadow-xl p-6 sm:p-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              AI Cover Letter Generator
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Instantly generate a tailored, recruiter-ready cover letter.
             </p>
           </div>
 
-          <nav aria-label="Primary">
-            <Link to="/ResumeRoot" aria-label="Open resume editor">
-              <button
-                className="inline-flex items-center gap-2 py-2 px-4 rounded-lg text-white font-semibold"
-                style={{
-                  background:
-                    "linear-gradient(90deg,var(--color-primary), var(--color-primary-600))",
-                  boxShadow: "0 6px 18px rgba(15,118,110,0.15)",
-                }}
-              >
-                Resume Editor
-              </button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+          <CoverLetterGen />
+        </section>
 
-      <main id="main-content" className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto space-y-10">
-          <section className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
-              Welcome to{" "}
-              <span style={{ color: "var(--color-primary)" }}>ResumeAI</span>
-            </h1>
-            <p className="mt-3 text-lg text-gray-600">
-              Craft ATS-friendly resumes and cover letters with AI guidance.
-            </p>
-          </section>
-
-          <section aria-labelledby="about-heading">
-            <AboutResumeAI />
-          </section>
-
-          <section aria-labelledby="cover-heading" className="surface p-6">
-            <h2
-              id="cover-heading"
-              className="text-xl font-semibold text-gray-900 mb-4"
-            >
-              AI Cover Letter Generator
-            </h2>
-            <CoverLetterGen />
-          </section>
-
-          <Footer />
-        </div>
-      </main>
-    </div>
+        <Footer />
+      </DashboardLayout>
+    </>
   );
 };
 
