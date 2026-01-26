@@ -68,8 +68,6 @@ const ResumeExperience: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isValid, setIsValid] = useState(false);
 
-  // Use backend proxy; do not call provider directly from client.
-
   const addExperience = () => {
     setExperiences([
       ...experiences,
@@ -112,7 +110,6 @@ const ResumeExperience: React.FC = () => {
       setError("Please provide a valid job title.");
       return;
     }
-    // We call the server-side AI proxy; it will validate server-side API key.
 
     setLoading(true);
     setError(null);
@@ -374,8 +371,6 @@ const ResumeExperience: React.FC = () => {
               </Button>
             </div>
           </Card>
-
-          {/* Right Panel - Resume Preview */}
 
           <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
             <div>
