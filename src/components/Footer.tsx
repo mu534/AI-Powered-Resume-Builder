@@ -6,32 +6,38 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 
-const Footer = () => {
+const Footer: React.FC = () => {
   const handleWipClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault(); // Prevent default navigation
-    alert("Working on it 🚧"); // Display message with emoji
+    e.preventDefault();
+    alert("Working on it 🚧");
   };
 
   return (
-    <footer className="bg-gray-900 text-white py-8">
-      <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-        {/* Left Section */}
-        <div className="mb-6 md:mb-0">
-          <h2 className="text-2xl font-bold">Resume AI</h2>
-          <p className="text-gray-400 mt-2">
+    <footer className="bg-gray-900 text-white relative pt-12 pb-6 overflow-hidden">
+      {/* Decorative gradient circles */}
+      <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 opacity-20 pointer-events-none"></div>
+      <div className="absolute -bottom-20 -right-16 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 opacity-20 pointer-events-none"></div>
+
+      <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 md:gap-0">
+        {/* Brand */}
+        <div className="flex flex-col items-start md:items-start gap-3">
+          <h2 className="text-2xl md:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
+            Resume AI
+          </h2>
+          <p className="text-gray-300 text-sm sm:text-base">
             Craft your perfect resume with AI precision.
           </p>
         </div>
 
-        {/* Navigation Links */}
-        <div className="mb-6 md:mb-0">
+        {/* Navigation */}
+        <div className="flex flex-col gap-3">
           <h3 className="text-lg font-semibold">Quick Links</h3>
-          <ul className="mt-2">
+          <ul className="flex flex-col gap-2">
             <li>
               <a
                 href="/about"
                 onClick={handleWipClick}
-                className="hover:text-indigo-400 transition"
+                className="hover:text-indigo-400 transition-all duration-300"
               >
                 About Us
               </a>
@@ -40,7 +46,7 @@ const Footer = () => {
               <a
                 href="/features"
                 onClick={handleWipClick}
-                className="hover:text-indigo-400 transition"
+                className="hover:text-indigo-400 transition-all duration-300"
               >
                 Features
               </a>
@@ -48,7 +54,7 @@ const Footer = () => {
             <li>
               <a
                 href="mailto:mudassirnajimuddin@gmail.com"
-                className="hover:text-indigo-400 transition"
+                className="hover:text-indigo-400 transition-all duration-300"
               >
                 Contact
               </a>
@@ -57,51 +63,51 @@ const Footer = () => {
         </div>
 
         {/* Social Links */}
-        <div>
+        <div className="flex flex-col gap-3">
           <h3 className="text-lg font-semibold">Follow Us</h3>
-          <div className="flex gap-4 mt-2">
+          <div className="flex gap-4">
             <a
               href="https://www.facebook.com/mudassir.najmuddiin"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-400 transition-colors duration-200"
+              className="text-gray-400 hover:text-indigo-400 transition-transform duration-200 hover:scale-110"
               aria-label="Follow us on Facebook"
             >
-              <FaFacebookSquare className="text-xl" />
+              <FaFacebookSquare className="text-2xl sm:text-3xl" />
             </a>
             <a
               href="https://x.com/Mudasir14964?t=h_g14PX8YJ3zjkjvsHKqaA&s=35"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-400 transition-colors duration-200"
+              className="text-gray-400 hover:text-indigo-400 transition-transform duration-200 hover:scale-110"
               aria-label="Follow us on X"
             >
-              <FaTwitter className="text-xl" /> {/* Using FaTwitter for X */}
+              <FaTwitter className="text-2xl sm:text-3xl" />
             </a>
             <a
               href="https://www.instagram.com/n_mudasir_n/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-400 transition-colors duration-200"
+              className="text-gray-400 hover:text-indigo-400 transition-transform duration-200 hover:scale-110"
               aria-label="Follow us on Instagram"
             >
-              <FaInstagram className="text-xl" />
+              <FaInstagram className="text-2xl sm:text-3xl" />
             </a>
             <a
               href="https://www.linkedin.com/in/mudassir-najimuddin-127064328"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-indigo-400 transition-colors duration-200"
+              className="text-gray-400 hover:text-indigo-400 transition-transform duration-200 hover:scale-110"
               aria-label="Follow us on LinkedIn"
             >
-              <FaLinkedin className="text-xl" />
+              <FaLinkedin className="text-2xl sm:text-3xl" />
             </a>
           </div>
         </div>
       </div>
 
-      {/* Copyright Section */}
-      <div className="border-t border-gray-700 mt-6 pt-4 text-center text-gray-500">
+      {/* Divider */}
+      <div className="border-t border-gray-700 mt-10 pt-4 text-center text-gray-400 text-sm sm:text-base">
         © {new Date().getFullYear()} Resume AI. All rights reserved.
       </div>
     </footer>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { PersonalDetails } from "../types";
 import htmlToPdfmake from "html-to-pdfmake";
@@ -9,10 +9,7 @@ import Card from "../Shared/components/Card";
 import Button from "../Shared/components/Button";
 import NavBar from "../components/NavBar";
 
-// Set the vfs using the pdfMake global object
 pdfMake.vfs = pdfFonts.vfs;
-
-// Register fonts
 pdfMake.fonts = {
   Roboto: {
     normal: "Roboto-Regular.ttf",
@@ -42,6 +39,12 @@ interface Education {
 interface Skill {
   name: string;
   level: string;
+}
+
+interface SavedResume {
+  id: string;
+  title: string;
+  createdAt: string;
 }
 
 const ResumeFinal: React.FC = () => {
@@ -77,14 +80,13 @@ const ResumeFinal: React.FC = () => {
     experiences = [],
     educations = [],
     skills = [],
-    themeColor = "#ff0000",
+    themeColor = "#4F46E5",
     fontSize = 16,
-    fontColor = "#000000",
+    fontColor = "#111827",
   } = state || {};
 
-  const name = `${personalDetails.firstName || ""} ${
-    personalDetails.lastName || ""
-  }`.trim();
+  const name =
+    `${personalDetails.firstName || ""} ${personalDetails.lastName || ""}`.trim();
   const jobTitle = personalDetails.jobTitle || "";
   const address = personalDetails.address || "";
   const phone = personalDetails.phone || "";
@@ -92,28 +94,28 @@ const ResumeFinal: React.FC = () => {
 
   const summaryPoints = summary
     .split(/\.|\n/)
-    .filter((point) => point.trim().length > 0)
-    .map((point) => point.trim() + ".");
-
+    .filter(Boolean)
+    .map((p) => p.trim() + ".");
   const getExperiencePoints = (summary: string) =>
     summary
       .split(/\.|\n/)
-      .filter((point) => point.trim().length > 0)
-      .map((point) => point.trim() + ".");
-
-  const getEducationPoints = (description: string) =>
-    description
+      .filter(Boolean)
+      .map((p) => p.trim() + ".");
+  const getEducationPoints = (desc: string) =>
+    desc
       .split(/\.|\n/)
-      .filter((point) => point.trim().length > 0)
-      .map((point) => point.trim() + ".");
+      .filter(Boolean)
+      .map((p) => p.trim() + ".");
 
-  // Generate or retrieve unique ID
-  React.useEffect(() => {
-    const savedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
+  // Generate unique ID for resume
+  useEffect(() => {
+    const savedResumes: SavedResume[] = JSON.parse(
+      localStorage.getItem("resumes") || "[]",
+    );
     if (!uniqueId) {
       const newId = uuidv4();
       setUniqueId(newId);
-      const newResume = {
+      const newResume: SavedResume = {
         id: newId,
         title: resumeTitle || name || "Untitled Resume",
         createdAt: new Date().toISOString(),
@@ -124,24 +126,17 @@ const ResumeFinal: React.FC = () => {
   }, [uniqueId, name, resumeTitle]);
 
   const saveResumeToLocalStorage = () => {
-    const savedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
-    const resumeIndex = savedResumes.findIndex(
-      (resume: { id: string }) => resume.id === uniqueId,
+    const savedResumes: SavedResume[] = JSON.parse(
+      localStorage.getItem("resumes") || "[]",
     );
-    if (resumeIndex === -1) {
-      const newResume = {
-        id: uniqueId,
-        title: resumeTitle || name || "Untitled Resume",
-        createdAt: new Date().toISOString(),
-      };
-      savedResumes.push(newResume);
-    } else {
-      savedResumes[resumeIndex] = {
-        ...savedResumes[resumeIndex],
-        title: resumeTitle || name || "Untitled Resume",
-        createdAt: new Date().toISOString(),
-      };
-    }
+    const resumeIndex = savedResumes.findIndex((r) => r.id === uniqueId);
+    const newResume: SavedResume = {
+      id: uniqueId,
+      title: resumeTitle || name || "Untitled Resume",
+      createdAt: new Date().toISOString(),
+    };
+    if (resumeIndex === -1) savedResumes.push(newResume);
+    else savedResumes[resumeIndex] = newResume;
     localStorage.setItem("resumes", JSON.stringify(savedResumes));
   };
 
@@ -150,71 +145,64 @@ const ResumeFinal: React.FC = () => {
     if (resumeRef.current) {
       const html = resumeRef.current.innerHTML;
       const pdfContent = htmlToPdfmake(html);
-      const documentDefinition = {
-        content: pdfContent,
-        defaultStyle: {
-          font: "Roboto",
-          fontSize: 12,
-        },
-        pageSize: { width: 595.28, height: 841.89 },
-        pageMargins: [40, 60, 40, 60] as [number, number, number, number], // [left, top, right, bottom] in points
-      };
       pdfMake
-        .createPdf(documentDefinition)
+        .createPdf({
+          content: pdfContent,
+          defaultStyle: { font: "Roboto", fontSize: 12 },
+          pageSize: "A4",
+          pageMargins: [40, 60, 40, 60],
+        })
         .download(`${resumeTitle || name}.pdf`);
     }
   };
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator
-        .share({
-          title: `${resumeTitle || name} Resume`,
-          text: `Check out my resume: ${window.location.origin}/resume/${uniqueId}`,
-          url: `${window.location.origin}/resume/${uniqueId}`,
-        })
-        .then(() => console.log("Successfully shared"))
-        .catch((error) => console.log("Error sharing:", error));
+      navigator.share({
+        title: `${resumeTitle || name} Resume`,
+        text: `Check out my resume: ${window.location.origin}/resume/${uniqueId}`,
+        url: `${window.location.origin}/resume/${uniqueId}`,
+      });
     }
   };
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col items-center justify-start w-screen h-screen"
-      style={{ padding: 0, margin: 0 }}
-    >
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-purple-50 flex flex-col items-center w-full">
       <NavBar />
-
-      <div className="flex-1 flex flex-col items-center justify-center w-full pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-14 mx-4 sm:mx-6 md:mx-10">
-        <div className="text-center mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-700">
-            Congrats! Your Ultimate AI generated Resume is ready!
+      <div className="flex-1 w-full max-w-5xl px-4 sm:px-6 md:px-10 pt-24 pb-12 flex flex-col items-center gap-6">
+        <div className="text-center w-full max-w-2xl">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-700">
+            Your AI-generated Resume is Ready!
           </h2>
-          <p className="text-gray-500 mt-2 text-sm sm:text-base">
-            Now you are ready to download your resume and you can share unique
-            resume URL with your friends and family
+          <p className="text-gray-500 mt-2 text-base">
+            Download your resume or share it via a unique link.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
-          <Button onClick={handleDownload}>Download</Button>
-          <Button variant="secondary" onClick={handleShare}>
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+          <Button className="w-full" onClick={handleDownload}>
+            Download
+          </Button>
+          <Button className="w-full" variant="secondary" onClick={handleShare}>
             Share
           </Button>
         </div>
 
-        <Card className="w-full resume-content">
-          <div ref={resumeRef} style={{ borderTop: `6px solid ${themeColor}` }}>
-            <div className="mb-6 sm:mb-8 text-center">
+        <Card className="w-full shadow-lg hover:shadow-xl transition-all duration-300">
+          <div
+            ref={resumeRef}
+            className="p-6 sm:p-8 bg-white rounded-lg border-t-8"
+            style={{ borderTopColor: themeColor }}
+          >
+            <div className="text-center mb-6">
               <h1
-                className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide"
+                className="text-2xl sm:text-3xl font-bold uppercase tracking-wide"
                 style={{ color: themeColor }}
               >
                 {jobTitle}
               </h1>
-
               <div
-                className="flex flex-col gap-1 mt-2 text-xs sm:text-sm md:text-base"
+                className="mt-2 flex flex-col gap-1 text-sm sm:text-base"
                 style={{ color: themeColor }}
               >
                 <span>{address}</span>
@@ -225,127 +213,89 @@ const ResumeFinal: React.FC = () => {
             </div>
 
             {summaryPoints.length > 0 && (
-              <section className="mb-6 sm:mb-8">
-                <h3
-                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                  style={{ color: themeColor, borderColor: themeColor }}
-                >
-                  Professional Summary
-                </h3>
+              <Section title="Professional Summary" themeColor={themeColor}>
                 <ul
                   className="list-disc list-inside space-y-1"
-                  style={{ color: fontColor, fontSize: `${fontSize}px` }}
+                  style={{ color: fontColor, fontSize }}
                 >
-                  {summaryPoints.map((point, index) => (
-                    <li key={index} className="text-sm sm:text-base md:text-lg">
-                      {point}
-                    </li>
+                  {summaryPoints.map((point, i) => (
+                    <li key={i}>{point}</li>
                   ))}
                 </ul>
-              </section>
+              </Section>
             )}
 
             {experiences.length > 0 && (
-              <section className="mb-6 sm:mb-8">
-                <h3
-                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                  style={{ color: themeColor, borderColor: themeColor }}
-                >
-                  Professional Experience
-                </h3>
-                {experiences.map((exp, index) => (
-                  <div key={index} className="mb-4">
+              <Section title="Professional Experience" themeColor={themeColor}>
+                {experiences.map((exp, i) => (
+                  <div key={i} className="mb-4">
                     <h4
-                      className="font-medium text-lg sm:text-xl md:text-2xl"
-                      style={{ color: fontColor, fontSize: `${fontSize}px` }}
+                      style={{ color: fontColor, fontSize: fontSize + 2 }}
+                      className="font-medium"
                     >
                       {exp.positionTitle}
                     </h4>
                     <p
-                      className="text-xs sm:text-sm md:text-base italic"
-                      style={{
-                        color: themeColor,
-                        fontSize: `${fontSize - 2}px`,
-                      }}
+                      style={{ color: themeColor, fontSize: fontSize - 2 }}
+                      className="italic text-sm sm:text-base"
                     >
                       {exp.companyName}, {exp.startDate} - {exp.endDate}
                     </p>
                     <ul
-                      className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm md:text-base"
-                      style={{
-                        color: fontColor,
-                        fontSize: `${fontSize - 2}px`,
-                      }}
+                      className="list-disc list-inside mt-2 space-y-1"
+                      style={{ color: fontColor, fontSize: fontSize - 2 }}
                     >
-                      {getExperiencePoints(exp.summary).map((point, i) => (
-                        <li key={i}>{point}</li>
+                      {getExperiencePoints(exp.summary).map((point, j) => (
+                        <li key={j}>{point}</li>
                       ))}
                     </ul>
                   </div>
                 ))}
-              </section>
+              </Section>
             )}
 
             {educations.length > 0 && (
-              <section className="mb-6 sm:mb-8">
-                <h3
-                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                  style={{ color: themeColor, borderColor: themeColor }}
-                >
-                  Education
-                </h3>
-                {educations.map((edu, index) => (
-                  <div key={index} className="mb-4">
+              <Section title="Education" themeColor={themeColor}>
+                {educations.map((edu, i) => (
+                  <div key={i} className="mb-4">
                     <h4
-                      className="font-medium text-lg sm:text-xl md:text-2xl"
-                      style={{ color: fontColor, fontSize: `${fontSize}px` }}
+                      style={{ color: fontColor, fontSize: fontSize + 2 }}
+                      className="font-medium"
                     >
                       {edu.degree} in {edu.major}
                     </h4>
                     <p
-                      className="text-xs sm:text-sm md:text-base italic"
-                      style={{
-                        color: themeColor,
-                        fontSize: `${fontSize - 2}px`,
-                      }}
+                      style={{ color: themeColor, fontSize: fontSize - 2 }}
+                      className="italic text-sm sm:text-base"
                     >
                       {edu.universityName}, {edu.startDate} - {edu.endDate}
                     </p>
                     <ul
-                      className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm md:text-base"
-                      style={{
-                        color: fontColor,
-                        fontSize: `${fontSize - 2}px`,
-                      }}
+                      className="list-disc list-inside mt-2 space-y-1"
+                      style={{ color: fontColor, fontSize: fontSize - 2 }}
                     >
-                      {getEducationPoints(edu.description).map((point, i) => (
-                        <li key={i}>{point}</li>
+                      {getEducationPoints(edu.description).map((point, j) => (
+                        <li key={j}>{point}</li>
                       ))}
                     </ul>
                   </div>
                 ))}
-              </section>
+              </Section>
             )}
 
             {skills.length > 0 && (
-              <section className="mb-6 sm:mb-8">
-                <h3
-                  className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 border-b-2"
-                  style={{ color: themeColor, borderColor: themeColor }}
-                >
-                  Key Skills
-                </h3>
+              <Section title="Key Skills" themeColor={themeColor}>
                 <ul
-                  className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base"
-                  style={{ color: fontColor, fontSize: `${fontSize - 2}px` }}
+                  className="list-disc list-inside space-y-1"
+                  style={{ color: fontColor, fontSize }}
                 >
-                  {skills.map((skill, index) => (
-                    <li key={index} className="text-sm sm:text-base md:text-lg">
+                  {skills.map((skill, i) => (
+                    <li key={i}>
                       {skill.name} - {skill.level}
                     </li>
                   ))}
                 </ul>
-              </section>
+              </Section>
             )}
           </div>
         </Card>
@@ -353,5 +303,22 @@ const ResumeFinal: React.FC = () => {
     </div>
   );
 };
+
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+  themeColor: string;
+}
+const Section: React.FC<SectionProps> = ({ title, children, themeColor }) => (
+  <section className="mb-6 sm:mb-8">
+    <h3
+      className="text-xl sm:text-2xl font-semibold mb-2 border-b-2"
+      style={{ color: themeColor, borderColor: themeColor }}
+    >
+      {title}
+    </h3>
+    {children}
+  </section>
+);
 
 export default ResumeFinal;
