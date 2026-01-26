@@ -1,4 +1,5 @@
 // src/types.ts
+
 export interface PersonalDetails {
   firstName: string;
   lastName: string;
@@ -8,24 +9,27 @@ export interface PersonalDetails {
   email: string;
 }
 
+export interface ResumeContent {
+  personal: {
+    name: string; // full name
+    email: string;
+    phone: string;
+    summary: string;
+  };
+  experience: {
+    title: string;
+    company: string;
+    dates: string;
+    description: string;
+  }[];
+  skills: string[];
+}
+
 export interface Resume {
-  createdAt: string;
+  createdAt: string; // must be string
   id: string;
   name: string;
-  content: {
-    personal: {
-      name: string;
-      email: string;
-      phone: string;
-      summary: string;
-    };
-    experience: {
-      title: string;
-      company: string;
-      dates: string;
-      description: string;
-    }[];
-    skills: string[];
-  };
+  content: ResumeContent;
   templateId: string;
+  coverImage?: string; // optional cover image
 }

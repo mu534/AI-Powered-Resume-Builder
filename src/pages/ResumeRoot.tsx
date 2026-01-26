@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SavedResumeCard from "./SavedResumeCard";
-import { Resume } from "../types"; // Import Resume type
+import { Resume } from "../types";
 import { useAppContext } from "../AppContext";
+
+const COVER_IMAGES = [
+  "https://source.unsplash.com/400x250/?document,resume",
+  "https://source.unsplash.com/400x250/?cv,document",
+  "https://source.unsplash.com/400x250/?business,profile",
+  "https://source.unsplash.com/400x250/?office,work",
+];
 
 const ResumeRoot: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,9 +17,7 @@ const ResumeRoot: React.FC = () => {
   const [query, setQuery] = useState("");
   const [savedResumes, setSavedResumes] = useState<Resume[]>([]);
   const navigate = useNavigate();
-
   const context = useAppContext();
-  console.log("ResumeRoot: Context available:", context);
 
   useEffect(() => {
     const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
@@ -20,7 +25,6 @@ const ResumeRoot: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // keep local state in sync when resumes are changed elsewhere
     const onStorage = () => {
       const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
       setSavedResumes(resumes);
@@ -37,36 +41,34 @@ const ResumeRoot: React.FC = () => {
   }, [savedResumes, query]);
 
   const handleCreateResume = () => {
-    if (newResumeTitle.trim()) {
-      console.log("Creating resume with title:", newResumeTitle);
-      // create a basic resume object and persist
-      const resume: Resume = {
-        name: newResumeTitle,
-        createdAt: Date.now(),
-        content: {
-          personal: {
-            firstName: "",
-            lastName: "",
-            jobTitle: "",
-            address: "",
-            phone: "",
-            email: "",
-            summary: "",
-          },
-          experience: [],
-          education: [],
-          skills: [],
+    if (!newResumeTitle.trim()) return;
+
+    const randomImage =
+      COVER_IMAGES[Math.floor(Math.random() * COVER_IMAGES.length)];
+
+    const newResume: Resume = {
+      name: newResumeTitle,
+      createdAt: new Date().toISOString(),
+      coverImage: randomImage,
+      content: {
+        personal: {
+          name: "",
+          email: "",
+          phone: "",
+          summary: "",
         },
-      };
-      const next = [resume, ...savedResumes];
-      localStorage.setItem("resumes", JSON.stringify(next));
-      setSavedResumes(next);
-      navigate(`/ResumeHome?title=${encodeURIComponent(newResumeTitle)}`);
-      setIsModalOpen(false);
-      setNewResumeTitle("");
-    } else {
-      console.log("Resume title is empty or invalid");
-    }
+        experience: [],
+        education: [],
+        skills: [],
+      },
+    };
+
+    const next = [newResume, ...savedResumes];
+    localStorage.setItem("resumes", JSON.stringify(next));
+    setSavedResumes(next);
+    navigate(`/ResumeHome?title=${encodeURIComponent(newResumeTitle)}`);
+    setIsModalOpen(false);
+    setNewResumeTitle("");
   };
 
   const handleDelete = (index: number) => {
@@ -79,11 +81,6 @@ const ResumeRoot: React.FC = () => {
     navigate(`/ResumeHome?title=${encodeURIComponent(title)}`);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Input value changing to:", e.target.value);
-    setNewResumeTitle(e.target.value);
-  };
-
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
       <nav className="bg-white shadow-md fixed w-full z-10 top-0">
@@ -91,13 +88,13 @@ const ResumeRoot: React.FC = () => {
           <div className="space-x-4">
             <Link
               to="/"
-              className="text-gray-600 hover:text-blue-600 transition duration-300"
+              className="text-gray-600 hover:text-blue-600 transition"
             >
               Home
             </Link>
             <Link
               to="/settings"
-              className="text-gray-600 hover:text-blue-600 transition duration-300"
+              className="text-gray-600 hover:text-blue-600 transition"
             >
               Settings
             </Link>
@@ -123,7 +120,6 @@ const ResumeRoot: React.FC = () => {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search resumes..."
                 className="px-3 py-2 border border-gray-200 rounded-md shadow-sm w-64"
-                aria-label="Search resumes"
               />
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -131,52 +127,17 @@ const ResumeRoot: React.FC = () => {
               >
                 + New Resume
               </button>
-              <label className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md cursor-pointer bg-white">
-                <input
-                  type="file"
-                  accept="application/json"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      try {
-                        const obj = JSON.parse(String(reader.result));
-                        const next = [obj, ...savedResumes];
-                        localStorage.setItem("resumes", JSON.stringify(next));
-                        setSavedResumes(next);
-                      } catch (err) {
-                        console.error("Import failed", err);
-                      }
-                    };
-                    reader.readAsText(file);
-                  }}
-                />
-                Import
-              </label>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* New card */}
             <div
               onClick={() => setIsModalOpen(true)}
               className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center h-56 cursor-pointer hover:bg-gray-50 transition"
             >
               <div className="text-4xl text-gray-400 mb-2">+</div>
               <div className="text-lg font-semibold">Create a new resume</div>
-              <div className="text-sm text-gray-500 mt-1">
-                Start from scratch or use a template
-              </div>
             </div>
-
-            {filtered.length === 0 && savedResumes.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500">
-                  No resumes yet — create one to get started.
-                </p>
-              </div>
-            )}
 
             {filtered.map((resume, idx) => (
               <div key={idx} className="relative">
@@ -185,25 +146,32 @@ const ResumeRoot: React.FC = () => {
                   createdAt={resume.createdAt}
                   index={idx + 1}
                   content={resume.content}
+                  coverImage={resume.coverImage}
                 />
                 <div className="absolute top-3 right-3 flex gap-2">
                   <button
                     onClick={() => handleEdit(resume.name)}
                     className="bg-white p-2 rounded-full shadow hover:bg-gray-100"
-                    aria-label={`Edit ${resume.name}`}
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(idx)}
                     className="bg-red-500 text-white p-2 rounded-full shadow hover:opacity-90"
-                    aria-label={`Delete ${resume.name}`}
                   >
                     Delete
                   </button>
                 </div>
               </div>
             ))}
+
+            {filtered.length === 0 && savedResumes.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">
+                  No resumes yet — create one to get started.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -216,42 +184,29 @@ const ResumeRoot: React.FC = () => {
                 Create New Resume
               </h2>
               <button
-                onClick={() => {
-                  console.log("Modal closed, title was:", newResumeTitle);
-                  setIsModalOpen(false);
-                }}
+                onClick={() => setIsModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
                 ×
               </button>
             </div>
-            <p className="text-gray-600 mb-4">
-              Add a title for your new resume
-            </p>
             <input
               type="text"
               value={newResumeTitle}
-              onChange={handleInputChange}
+              onChange={(e) => setNewResumeTitle(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g., Full Stack Resume"
-              aria-label="New resume title"
             />
             <div className="flex gap-4">
               <button
-                onClick={() => {
-                  console.log("Cancel clicked, title was:", newResumeTitle);
-                  setIsModalOpen(false);
-                  setNewResumeTitle("");
-                }}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-all"
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateResume}
-                className="flex-1 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-all"
-                disabled={!newResumeTitle.trim()}
-                aria-label="Create new resume"
+                className="flex-1 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600"
               >
                 Create
               </button>
