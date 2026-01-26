@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { PersonalDetails } from "../types";
 import htmlToPdfmake from "html-to-pdfmake";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -7,6 +7,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import { v4 as uuidv4 } from "uuid";
 import Card from "../Shared/components/Card";
 import Button from "../Shared/components/Button";
+import NavBar from "../components/NavBar";
 
 // Set the vfs using the pdfMake global object
 pdfMake.vfs = pdfFonts.vfs;
@@ -45,7 +46,6 @@ interface Skill {
 
 const ResumeFinal: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const resumeRef = useRef<HTMLDivElement>(null);
   const [uniqueId, setUniqueId] = useState<string>("");
 
@@ -183,50 +183,7 @@ const ResumeFinal: React.FC = () => {
       className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col items-center justify-start w-screen h-screen"
       style={{ padding: 0, margin: 0 }}
     >
-      <style>
-        {`
-          @media print {
-            body {
-              margin: 0;
-              padding: 0;
-            }
-            .no-print {
-              display: none !important;
-            }
-            .resume-content {
-              box-shadow: none;
-              border-top: none;
-              width: 100%;
-              max-width: 800px;
-              margin: 20mm auto 0;
-              padding: 20mm;
-              height: auto;
-            }
-            @page {
-              size: A4;
-              margin: 0;
-            }
-            h1, h2, h3, h4, p, ul, li {
-              color: #000000 !important;
-            }
-          }
-        `}
-      </style>
-      <nav className="bg-white shadow-md w-full fixed top-0 z-10 no-print">
-        <div className="flex justify-center max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 items-center">
-          <button
-            onClick={() => navigate("/Dashboard")}
-            className="text-gray-600 hover:text-blue-600 transition-colors text-sm sm:text-base mr-8"
-          >
-            <Link
-              to="/"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              Dashboard
-            </Link>
-          </button>
-        </div>
-      </nav>
+      <NavBar />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-14 mx-4 sm:mx-6 md:mx-10">
         <div className="text-center mb-4 sm:mb-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl no-print">
@@ -246,7 +203,7 @@ const ResumeFinal: React.FC = () => {
           </Button>
         </div>
 
-        <Card className="w-full resume-content" ref={undefined as any}>
+        <Card className="w-full resume-content">
           <div ref={resumeRef} style={{ borderTop: `6px solid ${themeColor}` }}>
             <div className="mb-6 sm:mb-8 text-center">
               <h1
