@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
 import Button from "../Shared/components/Button";
 import Card from "../Shared/components/Card";
 import { PersonalDetails } from "../types";
 import { generateResume } from "../services/aiService";
+import LivePreviewIcon from "../components/LivePreviewIcon";
+import NavBar from "../components/NavBar";
 
 interface Experience {
   positionTitle: string;
@@ -166,19 +168,27 @@ const ResumeExperience: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-400 via-white to-gray-400 flex flex-col items-center justify-center p-4">
       {/* Navbar */}
-      <nav className="bg-white shadow-md w-full fixed top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-end items-center">
-          <Link
-            to="/Dashboard"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            Dashboard
-          </Link>
+      <NavBar />
+
+      <div className="fixed top-16 left-0 right-0  bg-white/80 backdrop-blur-md border-b border-gray-100 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-rgba(15,118,110,0.15)">
+              <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">
+                4
+              </div>
+              <span className="font-semibold">Professional Experience</span>
+            </div>
+            <div className="flex-1 h-1 bg-gray-200 rounded-full mx-4">
+              <div className="h-full w-4/6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full"></div>
+            </div>
+            <span className="text-sm text-gray-500">Step 4 of 6</span>
+          </div>
         </div>
-      </nav>
+      </div>
 
       {/* Main Content */}
-      <div className="pt-20 pb-12 px-4 flex-1 flex flex-col items-center justify-center w-full max-w-6xl">
+      <div className="pt-20 pb-12 px-4 flex-1 mt-12 flex flex-col items-center justify-center w-full max-w-6xl">
         <div className="flex flex-col md:flex-row gap-8 w-full">
           <Card className="w-full md:w-1/2">
             <h2 className="text-xl font-bold text-gray-900 mb-2">
@@ -366,10 +376,11 @@ const ResumeExperience: React.FC = () => {
           </Card>
 
           {/* Right Panel - Resume Preview */}
+
           <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Live Preview
-            </h3>
+            <div>
+              <LivePreviewIcon />
+            </div>
             <ResumePreview
               personalDetails={personalDetails}
               themeColor={themeColor}

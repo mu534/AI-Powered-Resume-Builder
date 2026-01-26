@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ResumePreview from "../components/ResumePreview";
 import { PersonalDetails } from "../types";
+import LivePreviewIcon from "../components/LivePreviewIcon";
 
 // Types
 interface Skill {
@@ -76,21 +77,6 @@ const SkillCard: React.FC<{
   <div className="group p-6 border-2 border-gray-100 rounded-2xl hover:border-purple-200 transition-all bg-gradient-to-br from-white to-gray-50">
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-          <svg
-            className="w-5 h-5 text-purple-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-            />
-          </svg>
-        </div>
         <span className="text-sm font-semibold text-gray-500">
           Skill #{index + 1}
         </span>
@@ -317,14 +303,14 @@ const ResumeSkills: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 text-purple-600">
               <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">
-                4
+                5
               </div>
               <span className="font-semibold">Skills & Expertise</span>
             </div>
             <div className="flex-1 h-1 bg-gray-200 rounded-full mx-4">
-              <div className="h-full w-4/5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full"></div>
+              <div className="h-full w-5/6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full"></div>
             </div>
-            <span className="text-sm text-gray-500">Step 4 of 5</span>
+            <span className="text-sm text-gray-500">Step 5 of 6</span>
           </div>
         </div>
       </div>
@@ -455,52 +441,21 @@ const ResumeSkills: React.FC = () => {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="lg:sticky lg:top-36 lg:self-start">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <svg
-                    className="w-6 h-6 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                  Live Preview
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  <span className="text-sm text-gray-600 font-medium">
-                    Live
-                  </span>
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 overflow-auto max-h-[calc(100vh-300px)]">
-                <ResumePreview
-                  personalDetails={personalDetails}
-                  themeColor={themeColor}
-                  summary={summary}
-                  resumeTitle={resumeTitle}
-                  experience={experiences}
-                  education={educations}
-                  skills={skills}
-                  fontSize={fontSize}
-                  fontColor={fontColor}
-                />
-              </div>
-            </div>
+          <div>
+            <LivePreviewIcon />
+          </div>
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 overflow-auto max-h-[calc(100vh-300px)]">
+            <ResumePreview
+              personalDetails={personalDetails}
+              themeColor={themeColor}
+              summary={summary}
+              resumeTitle={resumeTitle}
+              experience={experiences}
+              education={educations}
+              skills={skills}
+              fontSize={fontSize}
+              fontColor={fontColor}
+            />
           </div>
         </div>
       </div>

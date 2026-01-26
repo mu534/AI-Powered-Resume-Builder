@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import { PersonalDetails } from "../types";
+import LivePreviewIcon from "../components/LivePreviewIcon";
+import Button from "../Shared/components/Button";
+import NavBar from "../components/NavBar";
 
 const ResumeHome: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -17,6 +20,9 @@ const ResumeHome: React.FC = () => {
     phone: "",
     email: "",
   });
+  const handleBack = () => {
+    navigate("/ResumeRoot", {});
+  };
 
   // State for theme color selection
   const [themeColor, setThemeColor] = useState("#9333ea"); // Default purple
@@ -38,15 +44,6 @@ const ResumeHome: React.FC = () => {
     }));
   };
 
-  // Load an existing resume if the title matches a saved one
-  useEffect(() => {
-    const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
-    const found = resumes.find((r: any) => r.name === resumeTitle);
-    if (found?.content?.personal) {
-      setPersonalDetails((prev) => ({ ...prev, ...found.content.personal }));
-    }
-  }, [resumeTitle]);
-
   // Handle "Next" navigation to summary
   const handleNext = () => {
     console.log("Navigating to next step with:", personalDetails);
@@ -54,11 +51,6 @@ const ResumeHome: React.FC = () => {
   };
 
   // Handle "Save" for personal details and navigate to preview
-  const handleSave = () => {
-    console.log("Saving personal details:", personalDetails);
-    alert("Personal details saved successfully!");
-    navigate("/resume-preview", { state: { personalDetails, resumeTitle } });
-  };
 
   // Handle theme color change
   const handleThemeChange = (color: string) => {
@@ -66,42 +58,30 @@ const ResumeHome: React.FC = () => {
   };
 
   // Save the current personal details into the saved resumes list
-  const saveToLocal = () => {
-    const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
-    const idx = resumes.findIndex((r: any) => r.name === resumeTitle);
-    const updated = {
-      name: resumeTitle,
-      createdAt: idx === -1 ? Date.now() : resumes[idx].createdAt,
-      content: {
-        personal: personalDetails,
-        experience: resumes[idx]?.content?.experience || [],
-        education: resumes[idx]?.content?.education || [],
-        skills: resumes[idx]?.content?.skills || [],
-      },
-    };
-    if (idx === -1) resumes.unshift(updated);
-    else resumes[idx] = updated;
-    localStorage.setItem("resumes", JSON.stringify(resumes));
-    alert("Saved locally");
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col items-center justify-center p-4">
       {/* Navbar */}
-      <nav className="bg-white shadow-md w-full z-10 top-0 fixed">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-end items-center">
-          <div className="flex items-center space-x-2"></div>
-          <Link
-            to="/"
-            className="text-gray-600 hover:text-blue-600 transition duration-300"
-          >
-            Dashboard
-          </Link>
-        </div>
-      </nav>
+      <NavBar />
 
+      <div className="fixed top-16 left-0 right-0  bg-white/80 backdrop-blur-md border-b border-gray-100 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-rgba(15,118,110,0.15)">
+              <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">
+                1
+              </div>
+              <span className="font-semibold">Professional Experience</span>
+            </div>
+            <div className="flex-1 h-1 bg-gray-200 rounded-full mx-4">
+              <div className="h-full w-1/6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full"></div>
+            </div>
+            <span className="text-sm text-gray-500">Step 1 of 6</span>
+          </div>
+        </div>
+      </div>
       {/* Main Content */}
-      <div className="pt-24 pb-12 px-4 flex-1 flex flex-col lg:flex-row items-start justify-center w-full max-w-6xl gap-8">
+      <div className="pt-24 pb-12 px-4 mt-12 flex-1 flex flex-col lg:flex-row items-start justify-center w-full max-w-6xl gap-8">
         {/* Left Panel - Personal Details Form */}
         <div className="w-full lg:w-1/2">
           <div
@@ -147,14 +127,7 @@ const ResumeHome: React.FC = () => {
                 placeholder="Last Name"
                 className="p-3 border border-gray-200 rounded-md focus:outline-none"
               />
-              <input
-                type="text"
-                name="jobTitle"
-                value={personalDetails.jobTitle}
-                onChange={handleInputChange}
-                placeholder="Job Title"
-                className="p-3 border border-gray-200 rounded-md focus:outline-none md:col-span-2"
-              />
+
               <input
                 type="text"
                 name="address"
@@ -182,61 +155,42 @@ const ResumeHome: React.FC = () => {
             </div>
 
             <div className="mt-6 flex items-center gap-3">
-              <button
-                onClick={() => {
-                  saveToLocal();
-                  handleSave();
-                }}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-md shadow"
+              <Button
+                variant="secondary"
+                onClick={handleBack}
+                className="border border-gray-200 px-4 py-2 rounded-md hover:bg-gray-50"
               >
-                Save & Preview
-              </button>
-              <button
+                Back
+              </Button>
+              <Button
                 onClick={handleNext}
                 className="border border-gray-200 px-4 py-2 rounded-md hover:bg-gray-50"
               >
                 Next →
-              </button>
-              <button
-                onClick={saveToLocal}
-                className="ml-auto text-sm text-gray-500 underline"
-              >
-                Save locally
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Right Panel - Live Preview */}
         <div className="w-full lg:w-1/2">
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-            <h3 className="text-lg font-medium text-gray-900 mb-3">
-              Live Preview
-            </h3>
-            <div
-              className="p-6 rounded-md"
-              style={{ borderLeft: `6px solid ${themeColor}` }}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold">
-                    {personalDetails.firstName} {personalDetails.lastName}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    {personalDetails.jobTitle || resumeTitle}
-                  </p>
-                </div>
-                <div className="text-right text-sm text-gray-500">
-                  <div>{personalDetails.email}</div>
-                  <div>{personalDetails.phone}</div>
-                </div>
-              </div>
-
-              <div className="mt-4 text-gray-700">
-                <p className="italic text-sm">
-                  {personalDetails.summary ||
-                    "Add a short professional summary to highlight your strengths."}
+          <LivePreviewIcon />
+          <div
+            className="p-6 rounded-md"
+            style={{ borderLeft: `6px solid ${themeColor}` }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">
+                  {personalDetails.firstName} {personalDetails.lastName}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {personalDetails.jobTitle || resumeTitle}
                 </p>
+              </div>
+              <div className="text-right text-sm text-gray-500">
+                <div>{personalDetails.email}</div>
+                <div>{personalDetails.phone}</div>
               </div>
             </div>
           </div>

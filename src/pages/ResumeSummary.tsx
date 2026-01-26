@@ -1,7 +1,10 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ResumePreview from "../components/ResumePreview";
 import { PersonalDetails } from "../types";
+import LivePreviewIcon from "../components/LivePreviewIcon";
+import Button from "../Shared/components/Button";
+import NavBar from "../components/NavBar";
 
 // Constants
 const DEFAULT_THEME_COLOR = "#9333ea";
@@ -53,14 +56,13 @@ const useResumeState = (initialState: LocationState | null) => {
 const generateAISummary = async (
   firstName: string,
   lastName: string,
-  jobTitle: string,
 ): Promise<string> => {
   const prompt = `You are a professional resume writer.
 
 Write a concise, impactful resume summary (3–4 sentences) for the following candidate:
 
 Name: ${firstName} ${lastName}
-Job Title: ${jobTitle}
+
 
 Focus on:
 - Professional tone
@@ -115,66 +117,6 @@ const ErrorAlert: React.FC<{ message: string }> = ({ message }) => (
   </div>
 );
 
-const StyledInput: React.FC<{
-  label: string;
-  type: string;
-  value: string | number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  min?: number;
-  max?: number;
-  placeholder?: string;
-  className?: string;
-}> = ({
-  label,
-  type,
-  value,
-  onChange,
-  min,
-  max,
-  placeholder,
-  className = "",
-}) => (
-  <div className="space-y-2">
-    <label className="block text-sm font-semibold text-gray-700">{label}</label>
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      min={min}
-      max={max}
-      placeholder={placeholder}
-      className={`w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${className}`}
-      aria-label={label}
-    />
-  </div>
-);
-
-const ColorPicker: React.FC<{
-  label: string;
-  value: string;
-  onChange: (color: string) => void;
-}> = ({ label, value, onChange }) => (
-  <div className="space-y-2">
-    <label className="block text-sm font-semibold text-gray-700">{label}</label>
-    <div className="relative">
-      <input
-        type="color"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        aria-label={label}
-      />
-      <div className="w-full h-12 rounded-xl border-2 border-gray-200 flex items-center px-4 gap-3 hover:border-purple-400 transition-colors cursor-pointer">
-        <div
-          className="w-8 h-8 rounded-lg shadow-sm border border-gray-200"
-          style={{ backgroundColor: value }}
-        />
-        <span className="text-sm font-mono text-gray-600">{value}</span>
-      </div>
-    </div>
-  </div>
-);
-
 // Main Component
 const ResumeSummary: React.FC = () => {
   const location = useLocation();
@@ -185,11 +127,8 @@ const ResumeSummary: React.FC = () => {
     summary,
     setSummary,
     themeColor,
-    setThemeColor,
     fontSize,
-    handleFontSizeChange,
     fontColor,
-    setFontColor,
     personalDetails,
     resumeTitle,
   } = useResumeState(locationState);
@@ -198,8 +137,10 @@ const ResumeSummary: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const generateSummary = useCallback(async () => {
-    if (!personalDetails?.jobTitle) {
-      setError("Job title is required to generate a summary.");
+    if (!personalDetails) {
+      setError(
+        "Personal details is required to is required to generate a summary.",
+      );
       return;
     }
 
@@ -210,7 +151,6 @@ const ResumeSummary: React.FC = () => {
       const generatedSummary = await generateAISummary(
         personalDetails.firstName,
         personalDetails.lastName,
-        personalDetails.jobTitle,
       );
       setSummary(generatedSummary);
     } catch (err) {
@@ -258,101 +198,30 @@ const ResumeSummary: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-3xl shadow-2xl text-center max-w-md border border-white/20">
-          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
+          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"></div>
           <h2 className="text-2xl font-bold text-gray-800 mb-3">
             No Resume Data Found
           </h2>
           <p className="text-gray-600 mb-8">
             Please start by creating a new resume from the dashboard.
           </p>
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all font-medium"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            Go to Dashboard
-          </Link>
         </div>
       </div>
     );
   }
 
+  const handleBack = () => {
+    navigate("/ResumeHome", {});
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Navbar */}
-      <nav className="bg-white/80 backdrop-blur-md shadow-sm w-full fixed top-0 left-0 z-20 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-            <span className="font-bold text-gray-800">Resume Builder</span>
-          </div>
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2 text-gray-700 hover:text-purple-600 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-purple-50"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            Dashboard
-          </Link>
-        </div>
-      </nav>
-
+      <NavBar />
       {/* Progress Indicator */}
-      <div className="fixed top-16 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-100 z-10">
+      <div className="fixed top-16 left-0 right-0 bg-white/80 backdrop-blur-md border-b  border-gray-100 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-purple-600">
+            <div className="flex items-center gap-2 text-rgba(15,118,110,0.15)">
               <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">
                 2
               </div>
@@ -386,21 +255,6 @@ const ResumeSummary: React.FC = () => {
               {/* AI Generation Section */}
               <div className="mb-8 p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-100">
                 <div className="flex items-start gap-3 mb-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                    <svg
-                      className="w-6 h-6 text-purple-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                  </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-800 mb-1">
                       AI-Powered Generation
@@ -416,48 +270,7 @@ const ResumeSummary: React.FC = () => {
                   disabled={loading}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
                 >
-                  {loading ? (
-                    <>
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                      Generate with AI
-                    </>
-                  )}
+                  {loading ? <>Generating...</> : <>Generate with AI</>}
                 </button>
               </div>
 
@@ -482,126 +295,29 @@ const ResumeSummary: React.FC = () => {
               </div>
             </div>
 
-            {/* Customization Panel */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <svg
-                  className="w-6 h-6 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                  />
-                </svg>
-                Customize Appearance
-              </h3>
-
-              <div className="grid grid-cols-2 gap-6">
-                <StyledInput
-                  label="Font Size"
-                  type="number"
-                  value={fontSize}
-                  onChange={(e) => handleFontSizeChange(Number(e.target.value))}
-                  min={MIN_FONT_SIZE}
-                  max={MAX_FONT_SIZE}
-                  placeholder="16"
-                />
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Quick Sizes
-                  </label>
-                  <div className="flex gap-2">
-                    {[14, 16, 18, 20].map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => handleFontSizeChange(size)}
-                        className={`flex-1 py-2 rounded-lg border-2 transition-all text-sm font-medium ${
-                          fontSize === size
-                            ? "border-purple-600 bg-purple-50 text-purple-700"
-                            : "border-gray-200 hover:border-purple-300 text-gray-600"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6 mt-6">
-                <ColorPicker
-                  label="Text Color"
-                  value={fontColor}
-                  onChange={setFontColor}
-                />
-
-                <ColorPicker
-                  label="Theme Color"
-                  value={themeColor}
-                  onChange={setThemeColor}
-                />
-              </div>
-            </div>
-
             {/* Action Button */}
-            <button
-              onClick={handleNext}
-              disabled={isSummaryEmpty}
-              className="w-full py-4 rounded-xl bg-gray-900 text-white font-semibold hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
-            >
-              Continue to Experience
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+
+            <div className="mt-6 flex items-center gap-3">
+              <Button
+                variant="secondary"
+                onClick={handleBack}
+                className="border border-gray-200 px-14 py-2 rounded-md hover:bg-gray-50"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </button>
+                Back
+              </Button>
+              <Button
+                onClick={handleNext}
+                disabled={isSummaryEmpty}
+                className="border border-gray-200 px-14 py-2 rounded-md hover:bg-gray-50"
+              >
+                Next →
+              </Button>
+            </div>
           </div>
 
-          {/* Right Panel - Preview */}
-          <div className="lg:sticky lg:top-36 lg:self-start">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 border border-white/20">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <svg
-                    className="w-6 h-6 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                  Live Preview
-                </h3>
-                <span className="text-sm px-3 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                  Live
-                </span>
-              </div>
+          <div>
+            <LivePreviewIcon />
+            <div>
               <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 overflow-auto max-h-[calc(100vh-300px)]">
                 <ResumePreview
                   personalDetails={personalDetails}
