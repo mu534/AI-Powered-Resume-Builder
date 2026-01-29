@@ -2,14 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SavedResumeCard from "./SavedResumeCard";
 import { Resume } from "../types";
-import { useAppContext } from "../AppContext";
 
-const COVER_IMAGES = [
-  "https://source.unsplash.com/400x250/?document,resume",
-  "https://source.unsplash.com/400x250/?cv,document",
-  "https://source.unsplash.com/400x250/?business,profile",
-  "https://source.unsplash.com/400x250/?office,work",
-];
+import { v4 as uuidv4 } from "uuid";
 
 const ResumeRoot: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,13 +11,14 @@ const ResumeRoot: React.FC = () => {
   const [query, setQuery] = useState("");
   const [savedResumes, setSavedResumes] = useState<Resume[]>([]);
   const navigate = useNavigate();
-  const context = useAppContext();
 
+  // Load resumes from localStorage
   useEffect(() => {
     const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
     setSavedResumes(resumes);
   }, []);
 
+  // Listen to storage changes
   useEffect(() => {
     const onStorage = () => {
       const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
@@ -33,32 +28,35 @@ const ResumeRoot: React.FC = () => {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  // Filter resumes by search query
   const filtered = useMemo(() => {
     if (!query.trim()) return savedResumes;
     return savedResumes.filter((r) =>
-      r.name.toLowerCase().includes(query.trim().toLowerCase()),
+      (r.name || "Untitled Resume")
+        .toLowerCase()
+        .includes(query.trim().toLowerCase()),
     );
   }, [savedResumes, query]);
 
+  // Generate cover image using Picsum (seeded by title)
+  const getCoverImage = (title: string = "Resume") => {
+    const seed = encodeURIComponent(title.toLowerCase().replace(/\s+/g, "-"));
+    return `https://picsum.photos/seed/${seed}/400/250?random=${Date.now()}`;
+  };
+
+  // Create a new resume
   const handleCreateResume = () => {
     if (!newResumeTitle.trim()) return;
 
-    const randomImage =
-      COVER_IMAGES[Math.floor(Math.random() * COVER_IMAGES.length)];
-
     const newResume: Resume = {
+      id: uuidv4(),
+      templateId: "default",
       name: newResumeTitle,
       createdAt: new Date().toISOString(),
-      coverImage: randomImage,
+      coverImage: getCoverImage(newResumeTitle),
       content: {
-        personal: {
-          name: "",
-          email: "",
-          phone: "",
-          summary: "",
-        },
+        personal: { name: "", email: "", phone: "", summary: "" },
         experience: [],
-        education: [],
         skills: [],
       },
     };
@@ -71,18 +69,22 @@ const ResumeRoot: React.FC = () => {
     setNewResumeTitle("");
   };
 
+  // Delete a resume
   const handleDelete = (index: number) => {
     const next = savedResumes.filter((_, i) => i !== index);
     localStorage.setItem("resumes", JSON.stringify(next));
     setSavedResumes(next);
   };
 
-  const handleEdit = (title: string) => {
+  // Edit a resume
+  const handleEdit = (title?: string) => {
+    if (!title) return;
     navigate(`/ResumeHome?title=${encodeURIComponent(title)}`);
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+      {/* Navbar */}
       <nav className="bg-white shadow-md fixed w-full z-10 top-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center items-center">
           <div className="space-x-4">
@@ -102,8 +104,10 @@ const ResumeRoot: React.FC = () => {
         </div>
       </nav>
 
+      {/* Main Content */}
       <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex-1 flex items-start justify-center w-full">
         <div className="max-w-7xl w-full">
+          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-extrabold text-gray-900">
@@ -130,7 +134,9 @@ const ResumeRoot: React.FC = () => {
             </div>
           </div>
 
+          {/* Resume Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Create new resume card */}
             <div
               onClick={() => setIsModalOpen(true)}
               className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center h-56 cursor-pointer hover:bg-gray-50 transition"
@@ -139,14 +145,15 @@ const ResumeRoot: React.FC = () => {
               <div className="text-lg font-semibold">Create a new resume</div>
             </div>
 
+            {/* Saved resumes */}
             {filtered.map((resume, idx) => (
               <div key={idx} className="relative">
                 <SavedResumeCard
-                  title={resume.name}
-                  createdAt={resume.createdAt}
+                  title={resume.name || "Untitled Resume"}
+                  createdAt={resume.createdAt || new Date().toISOString()}
                   index={idx + 1}
                   content={resume.content}
-                  coverImage={resume.coverImage}
+                  coverImage={resume.coverImage || getCoverImage(resume.name)}
                 />
                 <div className="absolute top-3 right-3 flex gap-2">
                   <button
@@ -176,6 +183,7 @@ const ResumeRoot: React.FC = () => {
         </div>
       </div>
 
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
@@ -195,7 +203,7 @@ const ResumeRoot: React.FC = () => {
               value={newResumeTitle}
               onChange={(e) => setNewResumeTitle(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="e.g., Full Stack Resume"
+              placeholder="e.g., Full Stack Developer Resume"
             />
             <div className="flex gap-4">
               <button
