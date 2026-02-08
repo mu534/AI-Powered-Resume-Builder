@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
 import ResumePreview from "../components/ResumePreview";
@@ -8,6 +8,7 @@ import { PersonalDetails } from "../types";
 import { generateResume } from "../services/aiService";
 import LivePreviewIcon from "../components/LivePreviewIcon";
 import NavBar from "../components/NavBar";
+import LoadingSkeleton from "../components/AISkeleton";
 
 interface Experience {
   positionTitle: string;
@@ -64,13 +65,22 @@ const ResumeExperience: React.FC = () => {
       summary: "",
     },
   ]);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isValid, setIsValid] = useState(false);
 
+  // Validation: all entries must have positionTitle and companyName
+  useEffect(() => {
+    const ok = experiences.every(
+      (e) => e.positionTitle.trim() && e.companyName.trim(),
+    );
+    setIsValid(ok);
+  }, [experiences]);
+
   const addExperience = () => {
-    setExperiences([
-      ...experiences,
+    setExperiences((prev) => [
+      ...prev,
       {
         positionTitle: "",
         companyName: "",
@@ -84,7 +94,7 @@ const ResumeExperience: React.FC = () => {
   };
 
   const removeExperience = (index: number) => {
-    setExperiences(experiences.filter((_, i) => i !== index));
+    setExperiences((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleExperienceChange = (
@@ -92,46 +102,58 @@ const ResumeExperience: React.FC = () => {
     field: keyof Experience,
     value: string,
   ) => {
-    const updatedExperiences = [...experiences];
-    updatedExperiences[index][field] = value;
-    setExperiences(updatedExperiences);
+    setExperiences((prev) => {
+      const updated = [...prev];
+      updated[index][field] = value;
+      return updated;
+    });
   };
 
-  // Simple validation: all entries must have positionTitle and companyName
-  React.useEffect(() => {
-    const ok = experiences.every(
-      (e) => e.positionTitle.trim() && e.companyName.trim(),
-    );
-    setIsValid(ok);
-  }, [experiences]);
-
-  const generateExperienceSummary = async (index: number) => {
-    if (!experiences[index].positionTitle) {
-      setError("Please provide a valid job title.");
+  const generateExperienceSummary = async (index: number, retries = 2) => {
+    const exp = experiences[index];
+    if (!exp.positionTitle || !exp.companyName) {
+      setError("Please provide both job title and company name.");
       return;
     }
 
-    setLoading(true);
+    setLoadingIndex(index);
     setError(null);
 
     try {
-      const prompt = `Write a professional resume summary for a ${experiences[index].positionTitle} at ${experiences[index].companyName}. Keep it concise (2-3 sentences) and highlight skills, experience, and career goals relevant to this role.`;
-      const resp = await generateResume({ prompt, model: "gemini-1.5-pro" });
-      const aiText = resp?.text || "";
-      if (aiText) {
-        handleExperienceChange(index, "summary", aiText.trim());
-      } else {
-        throw new Error("AI response was empty or invalid.");
-      }
-    } catch (err) {
-      console.error("Error generating AI summary:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to generate summary. Please try again later.",
+      const prompt = `Write a professional resume summary for a ${exp.positionTitle} at ${exp.companyName}. Keep it concise (2-3 sentences) and highlight skills, experience, and career goals.`;
+
+      const resp = await generateResume({
+        firstName: personalDetails.firstName,
+        lastName: personalDetails.lastName,
+        role: exp.positionTitle,
+        experience: [prompt], // adapt AI service input type
+        skills: [],
+      });
+
+      const aiText = resp?.text?.trim();
+      if (!aiText) throw new Error("AI returned empty response.");
+
+      // Append AI summary instead of overwriting
+      handleExperienceChange(
+        index,
+        "summary",
+        exp.summary ? exp.summary + " " + aiText : aiText,
       );
+    } catch (err) {
+      console.error("AI summary error:", err);
+      if (retries > 0) {
+        // Retry automatically
+        console.log("Retrying AI generation...");
+        generateExperienceSummary(index, retries - 1);
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to generate summary. Please try again.",
+        );
+      }
     } finally {
-      setLoading(false);
+      setLoadingIndex(null);
     }
   };
 
@@ -164,10 +186,10 @@ const ResumeExperience: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-400 via-white to-gray-400 flex flex-col items-center justify-center p-4">
-      {/* Navbar */}
       <NavBar />
 
-      <div className="fixed top-16 left-0 right-0  bg-white/80 backdrop-blur-md border-b border-gray-100 z-10">
+      {/* Progress Bar */}
+      <div className="fixed top-16 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-100 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 text-rgba(15,118,110,0.15)">
@@ -244,6 +266,7 @@ const ResumeExperience: React.FC = () => {
                       />
                     </div>
                   </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -274,6 +297,7 @@ const ResumeExperience: React.FC = () => {
                       />
                     </div>
                   </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -310,26 +334,37 @@ const ResumeExperience: React.FC = () => {
                       />
                     </div>
                   </div>
+
                   <div className="mb-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Summary
                     </label>
-                    <textarea
-                      value={exp.summary}
-                      onChange={(e) =>
-                        handleExperienceChange(index, "summary", e.target.value)
-                      }
-                      placeholder="Describe your role and achievements..."
-                      className="w-full p-3 border border-gray-200 rounded-md resize-none h-28"
-                      style={{ fontSize: `${fontSize}px`, color: fontColor }}
-                    />
+                    {loadingIndex === index ? (
+                      <LoadingSkeleton lines={3} />
+                    ) : (
+                      <textarea
+                        value={exp.summary}
+                        onChange={(e) =>
+                          handleExperienceChange(
+                            index,
+                            "summary",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Describe your role and achievements..."
+                        className="w-full p-3 border border-gray-200 rounded-md resize-none h-28"
+                        style={{ fontSize: `${fontSize}px`, color: fontColor }}
+                      />
+                    )}
                     <div className="mt-3 flex gap-2">
                       <Button
                         onClick={() => generateExperienceSummary(index)}
-                        disabled={loading || !exp.positionTitle}
+                        disabled={loadingIndex !== null || !exp.positionTitle}
                         className="flex-1"
                       >
-                        {loading ? "Generating…" : "Generate with AI"}
+                        {loadingIndex === index
+                          ? "Generating…"
+                          : "Generate with AI"}
                       </Button>
                       {experiences.length > 1 && (
                         <Button
@@ -344,6 +379,7 @@ const ResumeExperience: React.FC = () => {
                   </div>
                 </div>
               ))}
+
               <div className="pt-2">
                 <button
                   onClick={addExperience}
@@ -373,9 +409,7 @@ const ResumeExperience: React.FC = () => {
           </Card>
 
           <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-            <div>
-              <LivePreviewIcon />
-            </div>
+            <LivePreviewIcon />
             <ResumePreview
               personalDetails={personalDetails}
               themeColor={themeColor}

@@ -9,13 +9,8 @@ const router = express.Router();
 const groqKey = process.env.GROQ_API_KEY;
 const openaiKey = process.env.OPENAI_API_KEY;
 
-if (!groqKey && !openaiKey) {
-  console.warn(
-    "No AI API key set (GROQ_API_KEY or OPENAI_API_KEY). AI routes will fail.",
-  );
-}
-
 const apiKey = groqKey || openaiKey || null;
+
 const client = apiKey
   ? new OpenAI({
       apiKey,
@@ -28,30 +23,17 @@ router.post("/generate", async (req, res) => {
     return res.status(503).json({
       error: {
         code: "AI_NOT_CONFIGURED",
-        message: "AI provider not configured on server.",
+        message: "AI provider not configured.",
       },
     });
   }
 
-  let { prompt } = req.body || {};
-  if (typeof prompt !== "string") {
-    return res.status(400).json({
-      error: { code: "INVALID_INPUT", message: "Invalid or missing prompt." },
-    });
-  }
+  let { prompt } = req.body;
 
-  prompt = prompt.trim();
-  if (!prompt) {
+  if (typeof prompt !== "string" || !prompt.trim()) {
     return res.status(400).json({
       error: { code: "INVALID_INPUT", message: "Prompt cannot be empty." },
     });
-  }
-
-  // Limit prompt size for safety
-  if (prompt.length > 5000) {
-    return res
-      .status(413)
-      .json({ error: { code: "TOO_LARGE", message: "Prompt is too long." } });
   }
 
   try {
@@ -64,24 +46,27 @@ router.post("/generate", async (req, res) => {
       messages: [
         {
           role: "system",
-          content:
-            "You are a professional resume-writing AI that generates clear, concise, ATS-friendly resumes.",
+          content: "You are a professional resume-writing AI.",
         },
         { role: "user", content: prompt },
       ],
-      temperature: 0.4,
+      temperature: 0.3,
+      max_tokens: 300,
     });
 
-    const text = completion?.choices?.[0]?.message?.content || "";
+    let text = completion?.choices?.[0]?.message?.content || "";
+
+    // Clean up and truncate
+    text = text.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
+    const words = text.split(" ");
+    if (words.length > 50) text = words.slice(0, 50).join(" ") + "...";
+
     res.json({ text });
   } catch (err) {
     console.error("AI generate error:", err);
     const causeMsg = err?.cause?.message || err?.message;
     res.status(500).json({
-      error: {
-        code: "AI_ERROR",
-        message: causeMsg || "AI generation failed",
-      },
+      error: { code: "AI_ERROR", message: causeMsg || "AI generation failed" },
     });
   }
 });
