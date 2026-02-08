@@ -120,25 +120,26 @@ const ResumeExperience: React.FC = () => {
     setError(null);
 
     try {
-      const prompt = `Write a professional resume summary for a ${exp.positionTitle} at ${exp.companyName}. Keep it concise (2-3 sentences) and highlight skills, experience, and career goals.`;
-
       const resp = await generateResume({
         firstName: personalDetails.firstName,
         lastName: personalDetails.lastName,
         role: exp.positionTitle,
-        experience: [prompt], // adapt AI service input type
+        experience: [
+          exp.summary ||
+            "No additional experience details provided by the user.",
+        ],
         skills: [],
       });
 
-      const aiText = resp?.text?.trim();
+      const aiText = resp?.trim();
+      if (aiText.toLowerCase().includes("here's") || aiText.length < 40) {
+        throw new Error("AI response was low quality. Retrying...");
+      }
+
       if (!aiText) throw new Error("AI returned empty response.");
 
       // Append AI summary instead of overwriting
-      handleExperienceChange(
-        index,
-        "summary",
-        exp.summary ? exp.summary + " " + aiText : aiText,
-      );
+      handleExperienceChange(index, "summary", aiText);
     } catch (err) {
       console.error("AI summary error:", err);
       if (retries > 0) {

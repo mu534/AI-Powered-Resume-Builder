@@ -1,9 +1,15 @@
-const AISkeleton = () => {
+import React from "react";
+
+type LoadingSkeletonProps = {
+  lines?: number;
+};
+
+const AISkeleton: React.FC<LoadingSkeletonProps> = ({ lines = 3 }) => {
   return (
-    <div className="animate-pulse space-y-3 mb-4">
-      <div className="h-4 bg-gray-300 rounded w-3/4" />
-      <div className="h-4 bg-gray-300 rounded w-full" />
-      <div className="h-4 bg-gray-300 rounded w-5/6" />
+    <div className="space-y-2 animate-pulse">
+      {Array.from({ length: lines }).map((_, index) => (
+        <div key={index} className="h-4 w-full rounded bg-gray-300" />
+      ))}
     </div>
   );
 };
