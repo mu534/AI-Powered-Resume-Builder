@@ -111,13 +111,17 @@ const ResumeExperience: React.FC = () => {
 
   const generateExperienceSummary = async (index: number, retries = 2) => {
     const exp = experiences[index];
+
     if (!exp.positionTitle || !exp.companyName) {
       setError("Please provide both job title and company name.");
       return;
     }
 
-    setLoadingIndex(index);
-    setError(null);
+    // only set loading on first call
+    if (retries === 2) {
+      setLoadingIndex(index);
+      setError(null);
+    }
 
     try {
       const resp = await generateResume({
@@ -131,30 +135,49 @@ const ResumeExperience: React.FC = () => {
         skills: [],
       });
 
-      const aiText = resp?.trim();
-      if (aiText.toLowerCase().includes("here's") || aiText.length < 40) {
-        throw new Error("AI response was low quality. Retrying...");
+      const aiText = typeof resp === "string" ? resp.trim() : "";
+
+      if (
+        aiText.length < 60 ||
+        /here['’]s\b/i.test(aiText) ||
+        /as an ai|i am an ai|ai language model/i.test(aiText)
+      ) {
+       throw new Error("__LOW_QUALITY_AI__");
+
       }
 
-      if (!aiText) throw new Error("AI returned empty response.");
+      const combinedSummary = exp.summary
+        ? `${exp.summary}\n\n${aiText}`
+        : aiText;
 
-      // Append AI summary instead of overwriting
-      handleExperienceChange(index, "summary", aiText);
+      handleExperienceChange(index, "summary", combinedSummary);
     } catch (err) {
-      console.error("AI summary error:", err);
-      if (retries > 0) {
-        // Retry automatically
-        console.log("Retrying AI generation...");
-        generateExperienceSummary(index, retries - 1);
-      } else {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to generate summary. Please try again.",
-        );
+      const message = err instanceof Error ? err.message : "";
+
+     
+      if (message === "__LOW_QUALITY_AI__" && retries > 0) {
+        await generateExperienceSummary(index, retries - 1);
+        return;
       }
+
+      
+      if (message === "__LOW_QUALITY_AI__") {
+        setError(
+          "AI response wasn’t strong enough. Try adding more details or edit manually.",
+        );
+        return;
+      }
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to generate summary. Please try again.",
+      );
     } finally {
-      setLoadingIndex(null);
+      // only clear loading after LAST attempt
+      if (retries === 0) {
+        setLoadingIndex(null);
+      }
     }
   };
 
